@@ -50,6 +50,9 @@
         (((i) & 0x02ll) ? '1' : '0'), \
         (((i) & 0x01ll) ? '1' : '0')
 
+#define PRGRM_1 { LDA | 0x0E, ADD | 0x0F, OPT, HLT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 14 }
+#define PRGRM_2 { LDI | 0x03, STA | 0x0F, LDI | 0x00, ADD | 0x0F, OPT, JMP | 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+
 unsigned char register_A = 0x00;
 unsigned char register_B = 0x00;
 unsigned char register_I = 0x00;         // Instruction register
@@ -57,41 +60,7 @@ unsigned char register_O = 0x00;         // Output register
 unsigned char program_counter = 0x00;
 unsigned char memory_address = 0x00;
 unsigned char alu = 0x00;
-unsigned char RAM[16] = {
-  LDA | 0x0E,
-  ADD | 0x0F,
-  OPT,
-  HLT,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  28,
-  14
-
-  // LDI | 0x03,
-  // STA | 0x0F,
-  // LDI | 0x00,
-  // ADD | 0x0F,
-  // OPT,
-  // JMP | 0x03,
-  // 0,
-  // 0,
-  // 0,
-  // 0,
-  // 0,
-  // 0,
-  // 0,
-  // 0,
-  // 28,
-  // 14
-};
+unsigned char RAM[16] = PRGRM_2;
 unsigned char decoder_phase = 0x00;
 unsigned char bus;
 unsigned short decoder_output = 0x00;
