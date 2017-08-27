@@ -16,7 +16,7 @@
 #define CO  0b0000000000000100  // Program counter out
 #define JP  0b0000000000000010  // Jump (program counter in)
 
-uint16_t u_instructions[] = {
+static const uint16_t u_instructions[] = {
   MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 0000 - NOP
   MI|CO,  RO|II|CE,  IO|MI,  RO|AI,  0,         0, 0, 0,   // 0001 - LDA
   MI|CO,  RO|II|CE,  IO|MI,  RO|BI,  EO|AI,     0, 0, 0,   // 0010 - ADD
