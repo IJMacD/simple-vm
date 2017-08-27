@@ -17,6 +17,16 @@
 #define CLOCK_Y        1
 #define RAM_X          2
 #define RAM_Y          4
+#define OUTPUT_X      55
+#define OUTPUT_Y      13
+#define INSTRUCTION_X  2
+#define INSTRUCTION_Y  8
+#define DECODER_X      2
+#define DECODER_Y     11
+#define CONTROL_X      8
+#define CONTROL_Y     18
+
+#define PHASE_COUNT 5
 
 #define PRINTF_BINARY_PATTERN_INT4 "%c%c%c%c"
 #define PRINTF_BYTE_TO_BINARY_INT4(i)    \
@@ -44,7 +54,7 @@ unsigned char program_counter = 0x00;
 unsigned char memory_address = 0x0;
 unsigned char alu = 0x00;
 unsigned char RAM[16] = { 0 };
-
+unsigned char decoder_phase = 0x00;
 unsigned char bus;
 
 void *hConsole;
@@ -122,6 +132,38 @@ void printLabels() {
   pos.Y = RAM_Y + 2;
   const char ramc_lbl[] = "Contents";
   WriteConsoleOutputCharacter(hConsole, ramc_lbl, sizeof(ramc_lbl) - 1, pos, &dwBytesWritten);
+
+  // Output
+  pos.X = OUTPUT_X;
+  pos.Y = OUTPUT_Y;
+  const char output_lbl[] = "Output";
+  WriteConsoleOutputCharacter(hConsole, output_lbl, sizeof(output_lbl) - 1, pos, &dwBytesWritten);
+
+  // Instruction Register
+  pos.X = INSTRUCTION_X;
+  pos.Y = INSTRUCTION_Y;
+  const char instruction_lbl[] = "Instruction";
+  WriteConsoleOutputCharacter(hConsole, instruction_lbl, sizeof(instruction_lbl) - 1, pos, &dwBytesWritten);
+
+  // Instruction Decoder
+  pos.X = DECODER_X;
+  pos.Y = DECODER_Y;
+  const char decoder_lbl[] = "Decoder Phase";
+  WriteConsoleOutputCharacter(hConsole, decoder_lbl, sizeof(decoder_lbl) - 1, pos, &dwBytesWritten);
+  pos.X = DECODER_X;
+  pos.Y = DECODER_Y + 1;
+  const char phase_lbl[] = "0 1 2 3 4";
+  WriteConsoleOutputCharacter(hConsole, phase_lbl, sizeof(phase_lbl) - 1, pos, &dwBytesWritten);
+
+  // Control
+  pos.X = CONTROL_X;
+  pos.Y = CONTROL_Y;
+  const char control_lbl[] = "Control";
+  WriteConsoleOutputCharacter(hConsole, control_lbl, sizeof(control_lbl) - 1, pos, &dwBytesWritten);
+  pos.X = CONTROL_X;
+  pos.Y = CONTROL_Y + 1;
+  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
+  WriteConsoleOutputCharacter(hConsole, line_lbl, sizeof(line_lbl) - 1, pos, &dwBytesWritten);
 }
 
 void printRegisterA() {
@@ -149,6 +191,39 @@ void printRam() {
   printRegister8(RAM_X + 9, RAM_Y + 2, RAM[memory_address & 0x0F]);
 }
 
+void printOutput() {
+  printRegister8(OUTPUT_X, OUTPUT_Y + 1, register_O);
+}
+
+void printInstruction() {
+  printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, register_I);
+  printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, register_I >> 4);
+}
+
+void printDecoder() {
+  pos.X = DECODER_X;
+  pos.Y = DECODER_Y + 2;
+
+  int phase = decoder_phase & 0x07;
+  char output[PHASE_COUNT * 2];
+  int i, offset = 0;
+  for(i = 0; i < PHASE_COUNT + 1; i++) {
+    output[i*2  ] = phase == i ? '^' : ' ';
+    output[i*2+1] = ' ';
+  }
+
+  DWORD dwBytesWritten;
+  WriteConsoleOutputCharacter(hConsole, output, PHASE_COUNT * 2, pos, &dwBytesWritten);
+}
+
+void printControl() {
+  pos.X = CONTROL_X;
+  pos.Y = CONTROL_Y + 2;
+  const char control_ind[] = "                                    ——";
+  DWORD dwBytesWritten;
+  WriteConsoleOutputCharacter(hConsole, control_ind, sizeof(control_ind) - 1, pos, &dwBytesWritten);
+}
+
 void updateALU() {
   alu = register_A + register_B;
 }
@@ -160,12 +235,17 @@ void updateDisplay() {
   printProgramCounter();
   printBus();
   printRam();
+  printOutput();
+  printInstruction();
+  printDecoder();
+  printControl();
 }
 
 void main() {
   // Create blank console
   hConsole =  CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
   SetConsoleActiveScreenBuffer(hConsole);
+  SetConsoleOutputCP(1252);
 
   // Move Cursor out of the way and hide
   {
@@ -190,6 +270,7 @@ void main() {
     register_B--;
     updateALU();
     memory_address++;
+    decoder_phase++;
 
     Sleep(100);
   }
