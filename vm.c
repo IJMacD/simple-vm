@@ -3,31 +3,34 @@
 
 #include "ben.h"
 
-#define REGISTER_A_X  55
+#define REGISTER_A_X  50
 #define REGISTER_A_Y   4
-#define REGISTER_B_X  55
+#define REGISTER_B_X  50
 #define REGISTER_B_Y  10
-#define ALU_X         57
+#define ALU_X         52
 #define ALU_Y          7
-#define PROGRAM_COUNTER_X         55
-#define PROGRAM_COUNTER_Y          1
-#define BUS_X         33
-#define BUS_Y          0
+#define COUNTER_X     50
+#define COUNTER_Y      1
+#define BUS_X         29
+#define BUS_Y          1
 #define CLOCK_X        2
 #define CLOCK_Y        1
 #define RAM_X          2
 #define RAM_Y          4
-#define OUTPUT_X      55
+#define OUTPUT_X      50
 #define OUTPUT_Y      13
 #define INSTRUCTION_X  2
 #define INSTRUCTION_Y  8
 #define DECODER_X      2
-#define DECODER_Y     11
+#define DECODER_Y     12
 #define CONTROL_X      8
 #define CONTROL_Y     18
+#define HELP_X         4
+#define HELP_Y        22
 
 #define PHASE_COUNT 5
 #define CONTROL_LINES 15
+#define DEFAULT_SLEEP 1024
 
 #define PRINTF_BINARY_PATTERN_INT4 "%c%c%c%c"
 #define PRINTF_BYTE_TO_BINARY_INT4(i)    \
@@ -71,11 +74,29 @@ unsigned char RAM[16] = {
   0,
   28,
   14
+
+  // LDI | 0x03,
+  // STA | 0x0F,
+  // LDI | 0x00,
+  // ADD | 0x0F,
+  // OPT,
+  // JMP | 0x03,
+  // 0,
+  // 0,
+  // 0,
+  // 0,
+  // 0,
+  // 0,
+  // 0,
+  // 0,
+  // 28,
+  // 14
 };
 unsigned char decoder_phase = 0x00;
 unsigned char bus;
 unsigned short decoder_output = 0x00;
 unsigned char halt = 0x00;
+unsigned int sleep_delay = DEFAULT_SLEEP;
 
 void *hConsole;
 COORD pos;
@@ -122,8 +143,8 @@ void printLabels() {
   WriteConsoleOutputCharacter(hConsole, alu_lbl, sizeof(alu_lbl) - 1, pos, &dwBytesWritten);
 
   // Program Counter
-  pos.X = PROGRAM_COUNTER_X;
-  pos.Y = PROGRAM_COUNTER_Y;
+  pos.X = COUNTER_X;
+  pos.Y = COUNTER_Y;
   const char counter_lbl[] = "Counter";
   WriteConsoleOutputCharacter(hConsole, counter_lbl, sizeof(counter_lbl) - 1, pos, &dwBytesWritten);
 
@@ -184,6 +205,12 @@ void printLabels() {
   pos.Y = CONTROL_Y + 1;
   const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
   WriteConsoleOutputCharacter(hConsole, line_lbl, sizeof(line_lbl) - 1, pos, &dwBytesWritten);
+
+  // Help text
+  pos.X = HELP_X;
+  pos.Y = HELP_Y;
+  const char help_lbl[] = "SPACE - Step    a - Toggle halt    r - Reset    f - Faster    s - Slower";
+  WriteConsoleOutputCharacter(hConsole, help_lbl, sizeof(help_lbl) - 1, pos, &dwBytesWritten);
 }
 
 void printRegisterA() {
@@ -199,7 +226,7 @@ void printALU() {
 }
 
 void printProgramCounter() {
-  printRegister4(PROGRAM_COUNTER_X, PROGRAM_COUNTER_Y + 1, program_counter);
+  printRegister4(COUNTER_X, COUNTER_Y + 1, program_counter);
 }
 
 void printBus() {
@@ -224,6 +251,11 @@ void printOutput() {
 void printInstruction() {
   printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, register_I >> 4);
   printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, register_I);
+  const char inst_lbl[] = "NOPLDAADDSUBSTALDIJMP                     OUTHLT";
+  pos.X = INSTRUCTION_X + 6;
+  pos.Y = INSTRUCTION_Y + 2;
+  DWORD dwBytesWritten;
+  WriteConsoleOutputCharacter(hConsole, &inst_lbl[(register_I >> 4) * 3], 3, pos, &dwBytesWritten);
 }
 
 void printDecoder() {
@@ -385,17 +417,26 @@ void main() {
 
   while(1){
 
-    if(halt) {
-      if(_kbhit()) {
-        char c = _getch();
-        if(c == ' ') step();
-        else if(c == 'r') reset();
-        else if(c == 'a') halt = 0;
+    if(_kbhit()) {
+      char c = _getch();
+      if(c == ' ') step();
+      else if(c == 'r') reset();
+      else if(c == 'a') {
+        halt = halt ? 0 : 1;
+        updateDisplay();
+      } else if (c == 'f') {
+        sleep_delay /= 2;
+        if (sleep_delay < 10) sleep_delay = 10;
+      } else if (c == 's') {
+        sleep_delay *= 2;
       }
+    }
+
+    if(halt) {
       Sleep(100);
     } else {
       step();
-      Sleep(1000);
+      Sleep(sleep_delay);
     }
   }
 
