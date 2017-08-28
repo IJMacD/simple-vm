@@ -8,7 +8,7 @@ unsigned char register_O = 0x00;         // Output register
 unsigned char program_counter = 0x00;
 unsigned char memory_address = 0x00;
 unsigned char alu = 0x00;
-unsigned char RAM[16] = PRGRM_2;
+unsigned char RAM[16] = PRGRM_3;
 unsigned char decoder_phase = 0x00;
 unsigned char bus;
 unsigned short decoder_output = 0x00;

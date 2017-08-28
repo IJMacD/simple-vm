@@ -6,6 +6,7 @@
 
 #define PRGRM_1 { LDA | 0x0E, ADD | 0x0F, OPT, HLT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 14 }
 #define PRGRM_2 { LDI | 0x03, STA | 0x0F, LDI | 0x00, ADD | 0x0F, OPT, JMP | 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define PRGRM_3 { LDA | 0x0F, OPT, STA | 0x0D, ADD | 0x0E, STA | 0x0F, LDA | 0x0D, STA | 0x0E, JMP | 0x00, 0, 0, 0, 0, 0, 0, 1, 1 }
 
 extern unsigned char register_A;
 extern unsigned char register_B;
