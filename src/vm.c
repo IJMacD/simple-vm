@@ -36,6 +36,7 @@ void updateDisplay() {
   printControl();
   printClock();
   printRamMap();
+  printBusGraphic();
 }
 
 decodeInstruction() {

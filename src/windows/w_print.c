@@ -7,7 +7,9 @@
 /*   windows/vm.c   */
 extern void *hConsole;
 
+// Lazy temps, to save always redeclaring
 COORD pos;
+DWORD dwBytesWritten = 0;
 
 void printRegister4(int x, int y, unsigned char reg) {
   char output[255];
@@ -30,7 +32,6 @@ void printRegister8(int x, int y, unsigned char reg) {
 void printLabels() {
   char output[255];
   DWORD len;
-  DWORD dwBytesWritten = 0;
 
   // RegisterA
   pos.X = REGISTER_A_X;
@@ -87,6 +88,16 @@ void printLabels() {
   pos.Y = OUTPUT_Y;
   const char output_lbl[] = "Output";
   WriteConsoleOutputCharacter(hConsole, output_lbl, sizeof(output_lbl) - 1, pos, &dwBytesWritten);
+  pos.X = OUTPUT_X+8;
+  pos.Y = OUTPUT_Y+2;
+  const char output_box_top[] = "\xc9\xcd\xcd\xcd\xcd\xbb";
+  WriteConsoleOutputCharacter(hConsole, output_box_top, sizeof(output_box_top) - 1, pos, &dwBytesWritten);
+  pos.Y = OUTPUT_Y+3;
+  const char output_box_mid[] = "\xba    \xba";
+  WriteConsoleOutputCharacter(hConsole, output_box_mid, sizeof(output_box_mid) - 1, pos, &dwBytesWritten);
+  pos.Y = OUTPUT_Y+4;
+  const char output_box_bot[] = "\xc8\xcd\xcd\xcd\xcd\xbc";
+  WriteConsoleOutputCharacter(hConsole, output_box_bot, sizeof(output_box_bot) - 1, pos, &dwBytesWritten);
 
   // Instruction Register
   pos.X = INSTRUCTION_X;
@@ -127,15 +138,24 @@ void printLabels() {
   pos.Y = sbInfo.dwSize.Y - 1;
   const char help_lbl[] = "SPACE - Step   a - Toggle halt   r - Reset   f - Faster   s - Slower  q - Quit";
   WriteConsoleOutputCharacter(hConsole, help_lbl, sizeof(help_lbl) - 1, pos, &dwBytesWritten);
+
+  // Bus Graphic
+  int y;
+  pos.X = BUS_X + 6;
+  for(y = BUS_Y + 2; y < CONTROL_Y; y++) {
+    pos.Y = y;
+    DWORD dwBytesWritten;
+    WriteConsoleOutputCharacter(hConsole, "\xba", 1, pos, &dwBytesWritten);
+  }
 }
 
 void printOutput() {
   printRegister8(OUTPUT_X, OUTPUT_Y + 1, register_O);
   char output[255];
-  DWORD len = sprintf(output, "%8d", register_O);
+  DWORD len = sprintf(output, "%3d", register_O);
   DWORD dwBytesWritten = 0;
-  pos.X = OUTPUT_X + 5;
-  pos.Y = OUTPUT_Y + 2;
+  pos.X = OUTPUT_X + 10;
+  pos.Y = OUTPUT_Y + 3;
   WriteConsoleOutputCharacter(hConsole, output, len, pos, &dwBytesWritten);
 }
 
@@ -173,8 +193,8 @@ void printControl() {
   int i, offset = 0;
   for(i = 0; i < CONTROL_LINES; i++) {
     unsigned short bit = 1 << (15 - i);
-    output[offset++] = decoder_output & bit ? '—' : ' ';
-    output[offset++] = decoder_output & bit ? '—' : ' ';
+    output[offset++] = decoder_output & bit ? '\xcd' : ' '; // 'â”€' U+2500 DOS (code page 437) character: C4
+    output[offset++] = decoder_output & bit ? '\xcd' : ' ';
     output[offset++] = ' ';
   }
 
@@ -210,4 +230,63 @@ void printRamMap() {
     pos.Y = RAM_MAP_Y + i + 1;
     WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
   }
+}
+
+void printBusGraphic() {
+  const char sarrow_l[] = "\x11\xc4\xc4\xc4\xc4\xc4\xc4\xc4";
+  const char sarrow_r[] = "\xc4\xc4\xc4\xc4\xc4\xc4\xc4\x10";
+  const char darrow_l[] = "\x11\xcd\xcd\xcd\xcd\xcd\xcd\xcd";
+  const char darrow_r[] = "\xcd\xcd\xcd\xcd\xcd\xcd\xcd\x10";
+  const char spaces[]   = "        ";
+
+  const char *output;
+
+  // Memory In
+  pos.X = BUS_X - 2;
+  pos.Y = RAM_Y + 1;
+  output = (decoder_output & MI) ? sarrow_l : spaces;
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // RAM In/Out
+  pos.X = BUS_X - 2;
+  pos.Y = RAM_Y + 2;
+  output = (decoder_output & RI) ? darrow_l : ((decoder_output & RO) ? darrow_r : spaces);
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Instruction In/Out
+  pos.X = BUS_X - 2;
+  pos.Y = INSTRUCTION_Y + 1;
+  output = (decoder_output & II) ? darrow_l : ((decoder_output & IO) ? sarrow_r : spaces);
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Counter In/Out
+  pos.X = BUS_X + 7;
+  pos.Y = COUNTER_Y + 1;
+  output = (decoder_output & CO) ? sarrow_l : ((decoder_output & JP) ? sarrow_r : spaces);
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Register A In/Out
+  pos.X = BUS_X + 7;
+  pos.Y = REGISTER_A_Y + 1;
+  output = (decoder_output & AO) ? darrow_l : ((decoder_output & AI) ? darrow_r : spaces);
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // ALU Out
+  pos.X = BUS_X + 7;
+  pos.Y = ALU_Y + 1;
+  output = (decoder_output & EO) ? darrow_l : spaces;
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Register B In
+  pos.X = BUS_X + 7;
+  pos.Y = REGISTER_B_Y + 1;
+  // output = (decoder_output & BO) ? darrow_l : ((decoder_output & BI) ? darrow_r : spaces);
+  output = (decoder_output & BI) ? darrow_r : spaces;
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Output In
+  pos.X = BUS_X + 7;
+  pos.Y = OUTPUT_Y + 1;
+  output = (decoder_output & OI) ? darrow_r : spaces;
+  WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
 }
