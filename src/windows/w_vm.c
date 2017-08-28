@@ -29,6 +29,12 @@ void main() {
 
   printLabels();
 
+  // Kick-off first render
+  decodeInstruction();
+  updateDisplay();
+
+  Sleep(sleep_delay);
+
   step();
 
   while(1){
@@ -37,7 +43,7 @@ void main() {
       char c = _getch();
       if(c == ' ') step();
       else if(c == 'r') reset();
-      else if(c == 'a') {
+      else if(c == 'h') {
         halt = halt ? 0 : 1;
         printClock();
       } else if (c == 'f') {
