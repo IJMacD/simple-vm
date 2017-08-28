@@ -1,107 +1,110 @@
+#include <stdlib.h>
+
 #include "vm.h"
 #include "print.h"
 
-unsigned char register_A = 0x00;
-unsigned char register_B = 0x00;
-unsigned char register_I = 0x00;         // Instruction register
-unsigned char register_O = 0x00;         // Output register
-unsigned char program_counter = 0x00;
-unsigned char memory_address = 0x00;
-unsigned char alu = 0x00;
+CPU cpu = {
+  .register_A = 0x00,
+  .register_B = 0x00,
+  .register_I = 0x00,         // Instruction register
+  .register_O = 0x00,         // Output register
+  .program_counter = 0x00,
+  .memory_address = 0x00,
+  .alu = 0x00,
+  .decoder_phase = 0x00,
+  .decoder_output = 0x00,
+  .halt = 0x00
+};
+
 unsigned char RAM[16] = PRGRM_3;
-unsigned char decoder_phase = 0x00;
-unsigned char bus;
-unsigned short decoder_output = 0x00;
-unsigned char halt = 0x00;
 unsigned int sleep_delay = DEFAULT_SLEEP;
 
-void updateALU(int subtract) {
-  if (subtract){
-    alu = register_A - register_B;
-  } else {
-    alu = register_A + register_B;
-  }
+void (*output_hook)(char) = NULL;
+
+void updateALU(CPU *cpu, int subtract) {
+  cpu->alu = subtract ? (cpu->register_A - cpu->register_B) : (cpu->register_A + cpu->register_B);
 }
 
-void updateDisplay() {
-  printRegisterA();
-  printRegisterB();
-  printALU();
-  printProgramCounter();
-  printBus();
-  printRam();
-  printOutput();
-  printInstruction();
-  printDecoder();
-  printControl();
-  printClock();
-  printRamMap();
-  printBusGraphic();
+void updateDisplay(const CPU *cpu) {
+  printRegisterA(cpu);
+  printRegisterB(cpu);
+  printALU(cpu);
+  printProgramCounter(cpu);
+  printBus(cpu);
+  printRam(cpu);
+  printOutput(cpu);
+  printInstruction(cpu);
+  printDecoder(cpu);
+  printControl(cpu);
+  printClock(cpu);
+  printRamMap(cpu);
+  printBusGraphic(cpu);
 }
 
-decodeInstruction() {
-  unsigned char u_inst = ((register_I & 0xF0) >> 1) | (decoder_phase & 0x07);
-  decoder_output = u_instructions[u_inst];
+void decodeInstruction(CPU *cpu) {
+  unsigned char u_inst = ((cpu->register_I & 0xF0) >> 1) | (cpu->decoder_phase & 0x07);
+  cpu->decoder_output = u_instructions[u_inst];
   // printRegister8(DECODER_X, DECODER_Y + 3, u_inst);
 }
 
-executeInstruction() {
+void executeInstruction(CPU *cpu) {
+  unsigned short decoder_output = cpu->decoder_output;
 
   // Deal with Halt first
-  if (decoder_output & HT) halt = 1;
+  if (decoder_output & HT) cpu->halt = 1;
 
   // Subtract flag affects ALU output
-  updateALU(decoder_output & SU);
+  updateALU(cpu, decoder_output & SU);
 
   // Then we need to deal with outputs
   // note - latest definition wins
-  if (decoder_output & RO) bus = RAM[memory_address & 0x0F];
-  if (decoder_output & IO) bus = register_I & 0x0F;
-  if (decoder_output & AO) bus = register_A;
-  if (decoder_output & EO) bus = alu;
-  if (decoder_output & CO) bus = program_counter;
+  if (decoder_output & RO) cpu->bus = RAM[cpu->memory_address & 0x0F];
+  if (decoder_output & IO) cpu->bus = cpu->register_I & 0x0F;
+  if (decoder_output & AO) cpu->bus = cpu->register_A;
+  if (decoder_output & EO) cpu->bus = cpu->alu;
+  if (decoder_output & CO) cpu->bus = cpu->program_counter;
 
   // Now let's have some inputs
-  if (decoder_output & MI) memory_address = bus & 0x0F;
-  if (decoder_output & RI) RAM[memory_address & 0x0F] = bus;
+  if (decoder_output & MI) cpu->memory_address = cpu->bus & 0x0F;
+  if (decoder_output & RI) RAM[cpu->memory_address & 0x0F] = cpu->bus;
   if (decoder_output & II) {
-    register_I = bus;
-    decodeInstruction();
+    cpu->register_I = cpu->bus;
+    decodeInstruction(cpu);
   }
   if (decoder_output & AI) {
-    register_A = bus;
-    updateALU(decoder_output & SU);
+    cpu->register_A = cpu->bus;
+    updateALU(cpu, decoder_output & SU);
   }
   if (decoder_output & BI) {
-    register_B = bus;
-    updateALU(decoder_output & SU);
+    cpu->register_B = cpu->bus;
+    updateALU(cpu, decoder_output & SU);
   }
-  if (decoder_output & OI) register_O = bus;
-  if (decoder_output & JP) program_counter = bus & 0x0F;
+  if (decoder_output & OI) cpu->register_O = cpu->bus;
+  if (decoder_output & JP) cpu->program_counter = cpu->bus & 0x0F;
 
   // Finally do we increment the program counter?
-  if (decoder_output & CE) program_counter++;
+  if (decoder_output & CE) cpu->program_counter++;
 }
 
-step() {
-  decodeInstruction();
-  executeInstruction();
+void step(CPU *cpu) {
+  decodeInstruction(cpu);
+  executeInstruction(cpu);
 
-  updateDisplay();
+  updateDisplay(cpu);
 
-  decoder_phase = (decoder_phase + 1) % PHASE_COUNT;
+  cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
 }
 
-reset() {
-  program_counter = 0;
-  decoder_phase = 0;
-  register_A = 0;
-  register_B = 0;
-  register_I = 0;
-  register_O = 0;
-  alu = register_A + register_B;
-  decoder_output = 0;
+void reset(CPU *cpu) {
+  cpu->program_counter = 0;
+  cpu->decoder_phase = 0;
+  cpu->register_A = 0;
+  cpu->register_B = 0;
+  cpu->register_I = 0;
+  cpu->register_O = 0;
+  cpu->alu = cpu->register_A + cpu->register_B;
+  cpu->decoder_output = 0;
 
-  step();
+  step(cpu);
 }
 

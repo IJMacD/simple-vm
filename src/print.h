@@ -45,16 +45,17 @@
 
 void printRegister4();
 void printRegister8();
-void printRegisterA();
-void printRegisterB();
-void printALU();
-void printProgramCounter();
-void printBus();
-void printRam();
-void printOutput();
-void printInstruction();
-void printDecoder();
-void printControl();
-void printClock();
-void printRamMap();
-void printBusGraphic();
+
+void printRegisterA(const CPU *);
+void printRegisterB(const CPU *);
+void printALU(const CPU *);
+void printProgramCounter(const CPU *);
+void printBus(const CPU *);
+void printRam(const CPU *);
+void printOutput(const CPU *);
+void printInstruction(const CPU *);
+void printDecoder(const CPU *);
+void printControl(const CPU *);
+void printClock(const CPU *);
+void printRamMap(const CPU *);
+void printBusGraphic(const CPU *);

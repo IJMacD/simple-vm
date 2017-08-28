@@ -2,13 +2,13 @@
 
 #include "../vm.h"
 
-/*   vm.h    */
-extern unsigned char halt;
+/*   vm.c    */
+extern CPU cpu;
 extern unsigned int sleep_delay;
 
 void *hConsole;
 
-void main() {
+int main() {
   // Create blank console
   hConsole =  CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
   SetConsoleActiveScreenBuffer(hConsole);
@@ -30,22 +30,22 @@ void main() {
   printLabels();
 
   // Kick-off first render
-  decodeInstruction();
-  updateDisplay();
+  decodeInstruction(&cpu);
+  updateDisplay(&cpu);
 
   Sleep(sleep_delay);
 
-  step();
+  step(&cpu);
 
   while(1){
 
     if(_kbhit()) {
       char c = _getch();
-      if(c == ' ') step();
-      else if(c == 'r') reset();
+      if(c == ' ') step(&cpu);
+      else if(c == 'r') reset(&cpu);
       else if(c == 'h') {
-        halt = halt ? 0 : 1;
-        printClock();
+        cpu.halt = cpu.halt ? 0 : 1;
+        printClock(&cpu);
       } else if (c == 'f') {
         sleep_delay /= 2;
         if (sleep_delay < 10) sleep_delay = 10;
@@ -55,10 +55,10 @@ void main() {
       else if (c == 'q') return;
     }
 
-    if(halt) {
+    if(cpu.halt) {
       Sleep(100);
     } else {
-      step();
+      step(&cpu);
       Sleep(sleep_delay);
     }
   }

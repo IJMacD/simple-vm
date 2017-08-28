@@ -149,31 +149,31 @@ void printLabels() {
   }
 }
 
-void printOutput() {
-  printRegister8(OUTPUT_X, OUTPUT_Y + 1, register_O);
+void printOutput(const CPU *cpu) {
+  printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->register_O);
   char output[255];
-  DWORD len = sprintf(output, "%3d", register_O);
+  DWORD len = sprintf(output, "%3d", cpu->register_O);
   DWORD dwBytesWritten = 0;
   pos.X = OUTPUT_X + 10;
   pos.Y = OUTPUT_Y + 3;
   WriteConsoleOutputCharacter(hConsole, output, len, pos, &dwBytesWritten);
 }
 
-void printInstruction() {
-  printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, register_I >> 4);
-  printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, register_I);
+void printInstruction(const CPU *cpu) {
+  printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, cpu->register_I >> 4);
+  printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, cpu->register_I);
   const char inst_lbl[] = "NOPLDAADDSUBSTALDIJMP                     OUTHLT";
   pos.X = INSTRUCTION_X + 6;
   pos.Y = INSTRUCTION_Y + 2;
   DWORD dwBytesWritten;
-  WriteConsoleOutputCharacter(hConsole, &inst_lbl[(register_I >> 4) * 3], 3, pos, &dwBytesWritten);
+  WriteConsoleOutputCharacter(hConsole, &inst_lbl[(cpu->register_I >> 4) * 3], 3, pos, &dwBytesWritten);
 }
 
-void printDecoder() {
+void printDecoder(const CPU *cpu) {
   pos.X = DECODER_X;
   pos.Y = DECODER_Y + 2;
 
-  int phase = decoder_phase & 0x07;
+  int phase = cpu->decoder_phase & 0x07;
   char output[PHASE_COUNT * 2];
   int i, offset = 0;
   for(i = 0; i < PHASE_COUNT + 1; i++) {
@@ -185,7 +185,7 @@ void printDecoder() {
   WriteConsoleOutputCharacter(hConsole, output, PHASE_COUNT * 2, pos, &dwBytesWritten);
 }
 
-void printControl() {
+void printControl(const CPU *cpu) {
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 2;
 
@@ -193,8 +193,8 @@ void printControl() {
   int i, offset = 0;
   for(i = 0; i < CONTROL_LINES; i++) {
     unsigned short bit = 1 << (15 - i);
-    output[offset++] = decoder_output & bit ? '\xcd' : ' '; // '─' U+2500 DOS (code page 437) character: C4
-    output[offset++] = decoder_output & bit ? '\xcd' : ' ';
+    output[offset++] = cpu->decoder_output & bit ? '\xcd' : ' '; // '─' U+2500 DOS (code page 437) character: C4
+    output[offset++] = cpu->decoder_output & bit ? '\xcd' : ' ';
     output[offset++] = ' ';
   }
 
@@ -202,10 +202,10 @@ void printControl() {
   WriteConsoleOutputCharacter(hConsole, output, CONTROL_LINES * 3, pos, &dwBytesWritten);
 }
 
-void printClock() {
+void printClock(const CPU *cpu) {
   pos.X = CLOCK_X;
   pos.Y = CLOCK_Y + 1;
-  if (halt) {
+  if (cpu->halt) {
     const char clock_lbl[] = "HALT   "; // Extra spaces to cover up "RUNNING"
     DWORD dwBytesWritten;
     WriteConsoleOutputCharacter(hConsole, clock_lbl, sizeof(clock_lbl) - 1, pos, &dwBytesWritten);
@@ -216,7 +216,7 @@ void printClock() {
   }
 }
 
-void printRamMap() {
+void printRamMap(const CPU *cpu) {
   pos.X = RAM_MAP_X;
 
   DWORD dwBytesWritten;
@@ -224,7 +224,7 @@ void printRamMap() {
   int i, offset;
   for(i = 0; i < 16; i++) {
     offset = 0;
-    output[offset++] = memory_address == i ? '>' : ' ';
+    output[offset++] = cpu->memory_address == i ? '>' : ' ';
     sprintf(&output[offset], "%02X 0x%02X", i, RAM[i]);
 
     pos.Y = RAM_MAP_Y + i + 1;
@@ -232,7 +232,7 @@ void printRamMap() {
   }
 }
 
-void printBusGraphic() {
+void printBusGraphic(const CPU *cpu) {
   const char sarrow_l[] = "\x11\xc4\xc4\xc4\xc4\xc4\xc4\xc4";
   const char sarrow_r[] = "\xc4\xc4\xc4\xc4\xc4\xc4\xc4\x10";
   const char darrow_l[] = "\x11\xcd\xcd\xcd\xcd\xcd\xcd\xcd";
@@ -240,6 +240,7 @@ void printBusGraphic() {
   const char spaces[]   = "        ";
 
   const char *output;
+  unsigned short decoder_output = cpu->decoder_output;
 
   // Memory In
   pos.X = BUS_X - 2;
