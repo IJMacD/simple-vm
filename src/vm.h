@@ -1,7 +1,7 @@
 #include "ben.h"
 
 #define PHASE_COUNT 5
-#define CONTROL_LINES 15
+#define CONTROL_LINES 16
 #define DEFAULT_SLEEP 1024
 
 #define PRGRM_1 { LDA | 0x0E, ADD | 0x0F, OPT, HLT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 14 }

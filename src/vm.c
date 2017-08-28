@@ -32,7 +32,7 @@ void updateDisplay() {
   printRam();
   printOutput();
   printInstruction();
-  printDecoder();
+  // printDecoder();
   printControl();
   printClock();
   printRamMap();
@@ -80,6 +80,16 @@ executeInstruction() {
 
   // Finally do we increment the program counter?
   if (decoder_output & CE) program_counter++;
+
+  printDecoder();
+
+  // For real finally, shall we short circuit the rest of the decoder phases?
+  if (decoder_output & DR){
+    decoder_phase = 0;
+  }
+  else {
+    decoder_phase = (decoder_phase + 1) % PHASE_COUNT;
+  }
 }
 
 step() {
@@ -87,8 +97,6 @@ step() {
   executeInstruction();
 
   updateDisplay();
-
-  decoder_phase = (decoder_phase + 1) % PHASE_COUNT;
 }
 
 reset() {

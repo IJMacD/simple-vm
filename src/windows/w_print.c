@@ -111,7 +111,7 @@ void printLabels() {
   WriteConsoleOutputCharacter(hConsole, control_lbl, sizeof(control_lbl) - 1, pos, &dwBytesWritten);
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 1;
-  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
+  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP DR";
   WriteConsoleOutputCharacter(hConsole, line_lbl, sizeof(line_lbl) - 1, pos, &dwBytesWritten);
 
   // Ram Map

@@ -15,24 +15,25 @@
 #define CE  0b0000000000001000  // Program counter enable
 #define CO  0b0000000000000100  // Program counter out
 #define JP  0b0000000000000010  // Jump (program counter in)
+#define DR  0b0000000000000001  // Decoder Reset (skip rest of decoder phases)
 
 static const uint16_t u_instructions[] = {
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 0000 - NOP
-  MI|CO,  RO|II|CE,  IO|MI,  RO|AI,  0,         0, 0, 0,   // 0001 - LDA
-  MI|CO,  RO|II|CE,  IO|MI,  RO|BI,  EO|AI,     0, 0, 0,   // 0010 - ADD
-  MI|CO,  RO|II|CE,  IO|MI,  RO|BI,  EO|AI|SU,  0, 0, 0,   // 0011 - SUB
-  MI|CO,  RO|II|CE,  IO|MI,  AO|RI,  0,         0, 0, 0,   // 0100 - STA
-  MI|CO,  RO|II|CE,  IO|AI,  0,      0,         0, 0, 0,   // 0101 - LDI
-  MI|CO,  RO|II|CE,  IO|JP,  0,      0,         0, 0, 0,   // 0110 - JMP
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 0111
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1000
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1001
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1010
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1011
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1100
-  MI|CO,  RO|II|CE,  0,      0,      0,         0, 0, 0,   // 1101
-  MI|CO,  RO|II|CE,  AO|OI,  0,      0,         0, 0, 0,   // 1110 - OUT
-  MI|CO,  RO|II|CE,  HT,     0,      0,         0, 0, 0,   // 1111 - HLT
+  MI|CO,  RO|II|CE,  DR,        0,          0,            0, 0, 0,   // 0000 - NOP
+  MI|CO,  RO|II|CE,  IO|MI,     RO|AI|DR,   0,            0, 0, 0,   // 0001 - LDA
+  MI|CO,  RO|II|CE,  IO|MI,     RO|BI,      EO|AI|DR,     0, 0, 0,   // 0010 - ADD
+  MI|CO,  RO|II|CE,  IO|MI,     RO|BI,      EO|AI|SU|DR,  0, 0, 0,   // 0011 - SUB
+  MI|CO,  RO|II|CE,  IO|MI,     AO|RI|DR,   0,            0, 0, 0,   // 0100 - STA
+  MI|CO,  RO|II|CE,  IO|AI|DR,  0,          0,            0, 0, 0,   // 0101 - LDI
+  MI|CO,  RO|II|CE,  IO|JP|DR,  0,          0,            0, 0, 0,   // 0110 - JMP
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 0111
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1000
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1001
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1010
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1011
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1100
+  MI|CO,  RO|II|CE,  0,         0,          0,            0, 0, 0,   // 1101
+  MI|CO,  RO|II|CE,  AO|OI|DR,  0,          0,            0, 0, 0,   // 1110 - OUT
+  MI|CO,  RO|II|CE,  HT,        0,          0,            0, 0, 0,   // 1111 - HLT
 };
 
 #define NOP 0b00000000
