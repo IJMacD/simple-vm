@@ -22,6 +22,8 @@
 #define CONTROL_Y     18
 #define HELP_X         4
 #define HELP_Y        22
+#define RAM_MAP_X     67
+#define RAM_MAP_Y      1
 
 #define PRINTF_BINARY_PATTERN_INT4 "%c%c%c%c"
 #define PRINTF_BYTE_TO_BINARY_INT4(i)    \
@@ -54,3 +56,4 @@ void printInstruction();
 void printDecoder();
 void printControl();
 void printClock();
+void printRamMap();

@@ -114,6 +114,12 @@ void printLabels() {
   const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
   WriteConsoleOutputCharacter(hConsole, line_lbl, sizeof(line_lbl) - 1, pos, &dwBytesWritten);
 
+  // Ram Map
+  pos.X = RAM_MAP_X + 1;
+  pos.Y = RAM_MAP_Y;
+  const char ram_map_lbl[] = "RAM Map";
+  WriteConsoleOutputCharacter(hConsole, ram_map_lbl, sizeof(ram_map_lbl) - 1, pos, &dwBytesWritten);
+
   // Help text
   pos.X = HELP_X;
   pos.Y = HELP_Y;
@@ -185,5 +191,21 @@ void printClock() {
     const char clock_lbl[] = "RUNNING";
     DWORD dwBytesWritten;
     WriteConsoleOutputCharacter(hConsole, clock_lbl, sizeof(clock_lbl) - 1, pos, &dwBytesWritten);
+  }
+}
+
+void printRamMap() {
+  pos.X = RAM_MAP_X;
+
+  DWORD dwBytesWritten;
+  char output[9];
+  int i, offset;
+  for(i = 0; i < 16; i++) {
+    offset = 0;
+    output[offset++] = memory_address == i ? '>' : ' ';
+    sprintf(&output[offset], "%02X 0x%02X", i, RAM[i]);
+
+    pos.Y = RAM_MAP_Y + i + 1;
+    WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
   }
 }

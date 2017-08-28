@@ -35,6 +35,7 @@ void updateDisplay() {
   printDecoder();
   printControl();
   printClock();
+  printRamMap();
 }
 
 decodeInstruction() {
