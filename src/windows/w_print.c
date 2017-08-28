@@ -121,9 +121,11 @@ void printLabels() {
   WriteConsoleOutputCharacter(hConsole, ram_map_lbl, sizeof(ram_map_lbl) - 1, pos, &dwBytesWritten);
 
   // Help text
+  CONSOLE_SCREEN_BUFFER_INFO sbInfo;
+  GetConsoleScreenBufferInfo(hConsole, &sbInfo);
   pos.X = HELP_X;
-  pos.Y = HELP_Y;
-  const char help_lbl[] = "SPACE - Step    a - Toggle halt    r - Reset    f - Faster    s - Slower";
+  pos.Y = sbInfo.dwSize.Y - 1;
+  const char help_lbl[] = "SPACE - Step   a - Toggle halt   r - Reset   f - Faster   s - Slower  q - Quit";
   WriteConsoleOutputCharacter(hConsole, help_lbl, sizeof(help_lbl) - 1, pos, &dwBytesWritten);
 }
 

@@ -45,6 +45,7 @@ void main() {
       } else if (c == 's') {
         sleep_delay *= 2;
       }
+      else if (c == 'q') return;
     }
 
     if(halt) {

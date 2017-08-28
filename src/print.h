@@ -20,7 +20,7 @@
 #define DECODER_Y     12
 #define CONTROL_X      8
 #define CONTROL_Y     18
-#define HELP_X         4
+#define HELP_X         1
 #define HELP_Y        22
 #define RAM_MAP_X     67
 #define RAM_MAP_Y      1
