@@ -22,6 +22,7 @@ typedef struct {
   unsigned char halt;
 } CPU;
 
+extern CPU cpu;
 extern unsigned char RAM[16];
 extern unsigned int sleep_delay;
 
@@ -32,3 +33,5 @@ void updateALU(CPU *cpu, int);
 void updateDisplay(const CPU *cpu);
 void step(CPU *cpu);
 void reset(CPU *cpu);
+
+extern void (*output_hook)(unsigned char);

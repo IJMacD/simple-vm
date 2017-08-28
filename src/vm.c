@@ -19,7 +19,7 @@ CPU cpu = {
 unsigned char RAM[16] = PRGRM_3;
 unsigned int sleep_delay = DEFAULT_SLEEP;
 
-void (*output_hook)(char) = NULL;
+void (*output_hook)(unsigned char) = NULL;
 
 void updateALU(CPU *cpu, int subtract) {
   cpu->alu = subtract ? (cpu->register_A - cpu->register_B) : (cpu->register_A + cpu->register_B);
@@ -79,7 +79,12 @@ void executeInstruction(CPU *cpu) {
     cpu->register_B = cpu->bus;
     updateALU(cpu, decoder_output & SU);
   }
-  if (decoder_output & OI) cpu->register_O = cpu->bus;
+  if (decoder_output & OI) {
+    cpu->register_O = cpu->bus;
+    if(output_hook != NULL) {
+      output_hook(cpu->register_O);
+    }
+  }
   if (decoder_output & JP) cpu->program_counter = cpu->bus & 0x0F;
 
   // Finally do we increment the program counter?

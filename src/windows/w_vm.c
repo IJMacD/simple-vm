@@ -2,10 +2,6 @@
 
 #include "../vm.h"
 
-/*   vm.c    */
-extern CPU cpu;
-extern unsigned int sleep_delay;
-
 void *hConsole;
 
 int main() {

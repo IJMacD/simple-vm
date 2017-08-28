@@ -46,6 +46,8 @@
 void printRegister4();
 void printRegister8();
 
+void printLabels();
+
 void printRegisterA(const CPU *);
 void printRegisterB(const CPU *);
 void printALU(const CPU *);
