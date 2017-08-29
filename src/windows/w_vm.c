@@ -36,28 +36,31 @@ int main() {
     .halt = 0x00
   };
 
-  ram_type RAM = PRGRM_3;
+  ram_type prog1 = PRGRM_1;
+  ram_type prog2 = PRGRM_2;
+  ram_type prog3 = PRGRM_3;
+  ram_type *RAM = &prog3;
   unsigned int sleep_delay = DEFAULT_SLEEP;
 
   printLabels();
 
   // Kick-off first render
-  step(&cpu, RAM);
+  render(&cpu, *RAM);
 
   Sleep(sleep_delay);
-
-  step(&cpu, RAM);
 
   while(1){
 
     if(_kbhit()) {
       char c = _getch();
-      if(c == ' ') step(&cpu, RAM);
+      if(c == ' ') step(&cpu, *RAM);
       else if(c == 'r') {
         reset(&cpu);
-        // Step will: decode instruction; update relevant registers (execute);
-        // update display and then prepare for next step
-        step(&cpu, RAM);
+        // Render will:
+        // * decode instruction;
+        // * update relevant registers (execute);
+        // * update display
+        render(&cpu, *RAM);
       }
       else if(c == 'h') {
         cpu.halt = cpu.halt ? 0 : 1;
@@ -67,6 +70,15 @@ int main() {
         if (sleep_delay < 10) sleep_delay = 10;
       } else if (c == 's') {
         sleep_delay *= 2;
+      } else if (c == '1') {
+        RAM = &prog1;
+        render(&cpu, *RAM);
+      } else if (c == '2') {
+        RAM = &prog2;
+        render(&cpu, *RAM);
+      } else if (c == '3') {
+        RAM = &prog3;
+        render(&cpu, *RAM);
       }
       else if (c == 'q') return;
     }
@@ -74,7 +86,7 @@ int main() {
     if(cpu.halt) {
       Sleep(100);
     } else {
-      step(&cpu, RAM);
+      step(&cpu, *RAM);
       Sleep(sleep_delay);
     }
   }

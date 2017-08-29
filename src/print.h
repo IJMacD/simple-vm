@@ -18,8 +18,8 @@
 #define INSTRUCTION_Y  8
 #define DECODER_X      2
 #define DECODER_Y     12
-#define CONTROL_X      9
-#define CONTROL_Y     19
+#define CONTROL_X      2
+#define CONTROL_Y     20
 #define HELP_X         1
 #define HELP_Y        22
 #define RAM_MAP_X     67

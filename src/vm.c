@@ -75,16 +75,22 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (decoder_output & JP) cpu->program_counter = cpu->bus & 0x0F;
 
   // Finally do we increment the program counter?
-  if (decoder_output & CE) cpu->program_counter++;
+  if (decoder_output & CE){
+    cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
+  }
+}
+
+void render(CPU *cpu, ram_type RAM) {
+  decodeInstruction(cpu);
+  executeInstruction(cpu, RAM);
+
+  updateDisplay(cpu, RAM);
 }
 
 void step(CPU *cpu, ram_type RAM) {
   if (step_hook != NULL) step_hook();
 
-  decodeInstruction(cpu);
-  executeInstruction(cpu, RAM);
-
-  updateDisplay(cpu, RAM);
+  render(cpu, RAM);
 
   cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
 }

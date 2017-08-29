@@ -11,5 +11,5 @@ void printInstruction(const CPU *cpu){}
 void printDecoder(const CPU *cpu){}
 void printControl(const CPU *cpu){}
 void printClock(const CPU *cpu){}
-void printRamMap(const CPU *cpu){}
+void printRamMap(const CPU *cpu, const ram_type RAM){}
 void printBusGraphic(const CPU *cpu){}
