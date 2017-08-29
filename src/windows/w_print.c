@@ -216,19 +216,22 @@ void printClock(const CPU *cpu) {
   }
 }
 
-void printRamMap(const CPU *cpu) {
+void printRamMap(const CPU *cpu, const ram_type RAM) {
   pos.X = RAM_MAP_X;
 
   DWORD dwBytesWritten;
-  wchar_t output[9];
+  wchar_t output[10];
   int i, offset;
   for(i = 0; i < 16; i++) {
     offset = 0;
     output[offset++] = cpu->memory_address == i ? 0x25BA : ' '; // U+25BA BLACK RIGHT-POINTING POINTER
     wsprintf(&output[offset], L"%02X 0x%02X", i, RAM[i]);
+    offset += 7;
+    output[offset++] = cpu->program_counter == i ? 0x25C1 : ' '; // U+25C1 WHITE LEFT-POINTING TRIANGLE
+    output[offset++] = '\0';
 
     pos.Y = RAM_MAP_Y + i + 1;
-    WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
+    WriteConsoleOutputCharacter(hConsole, output, 10, pos, &dwBytesWritten);
   }
 }
 

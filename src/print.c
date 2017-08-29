@@ -21,7 +21,7 @@ void printBus(const CPU *cpu) {
   printRegister8(BUS_X, BUS_Y + 1, cpu->bus);
 }
 
-void printRam(const CPU *cpu) {
+void printRam(const CPU *cpu, const ram_type RAM) {
   printRegister4(RAM_X + 9, RAM_Y + 1, cpu->memory_address);
   printRegister8(RAM_X + 9, RAM_Y + 2, RAM[cpu->memory_address & 0x0F]);
 }

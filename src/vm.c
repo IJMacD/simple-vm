@@ -3,41 +3,25 @@
 #include "vm.h"
 #include "print.h"
 
-CPU cpu = {
-  .register_A = 0x00,
-  .register_B = 0x00,
-  .register_I = 0x00,         // Instruction register
-  .register_O = 0x00,         // Output register
-  .program_counter = 0x00,
-  .memory_address = 0x00,
-  .alu = 0x00,
-  .decoder_phase = 0x00,
-  .decoder_output = 0x00,
-  .halt = 0x00
-};
-
-unsigned char RAM[16] = PRGRM_3;
-unsigned int sleep_delay = DEFAULT_SLEEP;
-
 void (*output_hook)(unsigned char) = NULL;
 
 void updateALU(CPU *cpu, int subtract) {
   cpu->alu = subtract ? (cpu->register_A - cpu->register_B) : (cpu->register_A + cpu->register_B);
 }
 
-void updateDisplay(const CPU *cpu) {
+void updateDisplay(const CPU *cpu, const ram_type RAM) {
   printRegisterA(cpu);
   printRegisterB(cpu);
   printALU(cpu);
   printProgramCounter(cpu);
   printBus(cpu);
-  printRam(cpu);
+  printRam(cpu, RAM);
   printOutput(cpu);
   printInstruction(cpu);
   printDecoder(cpu);
   printControl(cpu);
   printClock(cpu);
-  printRamMap(cpu);
+  printRamMap(cpu, RAM);
   printBusGraphic(cpu);
 }
 
@@ -47,7 +31,7 @@ void decodeInstruction(CPU *cpu) {
   // printRegister8(DECODER_X, DECODER_Y + 3, u_inst);
 }
 
-void executeInstruction(CPU *cpu) {
+void executeInstruction(CPU *cpu, ram_type RAM) {
   unsigned short decoder_output = cpu->decoder_output;
 
   // Deal with Halt first
@@ -91,11 +75,11 @@ void executeInstruction(CPU *cpu) {
   if (decoder_output & CE) cpu->program_counter++;
 }
 
-void step(CPU *cpu) {
+void step(CPU *cpu, ram_type RAM) {
   decodeInstruction(cpu);
-  executeInstruction(cpu);
+  executeInstruction(cpu, RAM);
 
-  updateDisplay(cpu);
+  updateDisplay(cpu, RAM);
 
   cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
 }
@@ -109,7 +93,5 @@ void reset(CPU *cpu) {
   cpu->register_O = 0;
   cpu->alu = cpu->register_A + cpu->register_B;
   cpu->decoder_output = 0;
-
-  step(cpu);
 }
 

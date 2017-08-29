@@ -22,16 +22,14 @@ typedef struct {
   unsigned char halt;
 } CPU;
 
-extern CPU cpu;
-extern unsigned char RAM[16];
-extern unsigned int sleep_delay;
+typedef unsigned char ram_type[16];
 
 int main();
-void decodeInstruction(CPU *cpu);
-void executeInstruction(CPU *cpu);
-void updateALU(CPU *cpu, int);
-void updateDisplay(const CPU *cpu);
-void step(CPU *cpu);
-void reset(CPU *cpu);
+void decodeInstruction(CPU *);
+void executeInstruction(CPU *, ram_type);
+void updateALU(CPU *, int);
+void updateDisplay(const CPU *, const ram_type);
+void step(CPU *, ram_type);
+void reset(CPU *);
 
 extern void (*output_hook)(unsigned char);
