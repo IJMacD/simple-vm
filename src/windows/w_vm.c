@@ -10,7 +10,7 @@ int main() {
   SetConsoleActiveScreenBuffer(hConsole);
   // SetConsoleOutputCP(437); // DOS
   // SetConsoleOutputCP(1252); // Windows-1252 ANSI Latin 1
-  SetConsoleOutputCP(65001);  // UTF-8
+  // SetConsoleOutputCP(65001);  // UTF-8
 
   // Move Cursor out of the way and hide
   {
