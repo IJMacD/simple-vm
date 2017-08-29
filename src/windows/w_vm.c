@@ -8,9 +8,9 @@ int main() {
   // Create blank console
   hConsole =  CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
   SetConsoleActiveScreenBuffer(hConsole);
-  SetConsoleOutputCP(437); // DOS
+  // SetConsoleOutputCP(437); // DOS
   // SetConsoleOutputCP(1252); // Windows-1252 ANSI Latin 1
-  // SetConsoleOutputCP(65001);  // UTF-8
+  SetConsoleOutputCP(65001);  // UTF-8
 
   // Move Cursor out of the way and hide
   {

@@ -4,6 +4,8 @@
 #include "../vm.h"
 #include "../print.h"
 
+#define LENGTH(x) sizeof(x) / sizeof(x[0])
+
 /*   windows/vm.c   */
 extern void *hConsole;
 
@@ -12,8 +14,8 @@ COORD pos;
 DWORD dwBytesWritten = 0;
 
 void printRegister4(int x, int y, unsigned char reg) {
-  char output[255];
-  DWORD len = sprintf(output, "0x%02X " PRINTF_BINARY_PATTERN_INT4, reg & 0x0F, PRINTF_BYTE_TO_BINARY_INT4(reg));
+  wchar_t output[255];
+  DWORD len = wsprintf(output, L"0x%02X " PRINTF_BINARY_PATTERN_INT4, reg & 0x0F, PRINTF_BYTE_TO_BINARY_INT4(reg));
   DWORD dwBytesWritten = 0;
   pos.X = x;
   pos.Y = y;
@@ -21,8 +23,8 @@ void printRegister4(int x, int y, unsigned char reg) {
 }
 
 void printRegister8(int x, int y, unsigned char reg) {
-  char output[255];
-  DWORD len = sprintf(output, "0x%02X " PRINTF_BINARY_PATTERN_INT8, reg, PRINTF_BYTE_TO_BINARY_INT8(reg));
+  wchar_t output[255];
+  DWORD len = wsprintf(output, L"0x%02X " PRINTF_BINARY_PATTERN_INT8, reg, PRINTF_BYTE_TO_BINARY_INT8(reg));
   DWORD dwBytesWritten = 0;
   pos.X = x;
   pos.Y = y;
@@ -30,114 +32,112 @@ void printRegister8(int x, int y, unsigned char reg) {
 }
 
 void printLabels() {
-  char output[255];
-  DWORD len;
 
   // RegisterA
   pos.X = REGISTER_A_X;
   pos.Y = REGISTER_A_Y;
-  const char rega_lbl[] = "Register A";
-  WriteConsoleOutputCharacter(hConsole, rega_lbl, sizeof(rega_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t rega_lbl[] = L"Register A";
+  WriteConsoleOutputCharacter(hConsole, rega_lbl, LENGTH(rega_lbl) - 1, pos, &dwBytesWritten);
 
   // RegisterB
   pos.X = REGISTER_B_X;
   pos.Y = REGISTER_B_Y;
-  const char regb_lbl[] = "Register B";
-  WriteConsoleOutputCharacter(hConsole, regb_lbl, sizeof(regb_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t regb_lbl[] = L"Register B";
+  WriteConsoleOutputCharacter(hConsole, regb_lbl, LENGTH(regb_lbl) - 1, pos, &dwBytesWritten);
 
   // ALU
   pos.X = ALU_X;
   pos.Y = ALU_Y;
-  const char alu_lbl[] = "ALU";
-  WriteConsoleOutputCharacter(hConsole, alu_lbl, sizeof(alu_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t alu_lbl[] = L"ALU";
+  WriteConsoleOutputCharacter(hConsole, alu_lbl, LENGTH(alu_lbl) - 1, pos, &dwBytesWritten);
 
   // Program Counter
   pos.X = COUNTER_X;
   pos.Y = COUNTER_Y;
-  const char counter_lbl[] = "Counter";
-  WriteConsoleOutputCharacter(hConsole, counter_lbl, sizeof(counter_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t counter_lbl[] = L"Counter";
+  WriteConsoleOutputCharacter(hConsole, counter_lbl, LENGTH(counter_lbl) - 1, pos, &dwBytesWritten);
 
   // Bus Indicator
   pos.X = BUS_X;
   pos.Y = BUS_Y;
-  const char bus_lbl[] = "Bus";
-  WriteConsoleOutputCharacter(hConsole, bus_lbl, sizeof(bus_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t bus_lbl[] = L"Bus";
+  WriteConsoleOutputCharacter(hConsole, bus_lbl, LENGTH(bus_lbl) - 1, pos, &dwBytesWritten);
 
   // Clock
   pos.X = CLOCK_X;
   pos.Y = CLOCK_Y;
-  const char clock_lbl[] = "Clock";
-  WriteConsoleOutputCharacter(hConsole, clock_lbl, sizeof(clock_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t clock_lbl[] = L"Clock";
+  WriteConsoleOutputCharacter(hConsole, clock_lbl, LENGTH(clock_lbl) - 1, pos, &dwBytesWritten);
 
   // RAM
   pos.X = RAM_X;
   pos.Y = RAM_Y;
-  const char ram_lbl[] = "RAM";
-  WriteConsoleOutputCharacter(hConsole, ram_lbl, sizeof(ram_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t ram_lbl[] = L"RAM";
+  WriteConsoleOutputCharacter(hConsole, ram_lbl, LENGTH(ram_lbl) - 1, pos, &dwBytesWritten);
   pos.X = RAM_X;
   pos.Y = RAM_Y + 1;
-  const char rama_lbl[] = "Address";
-  WriteConsoleOutputCharacter(hConsole, rama_lbl, sizeof(rama_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t rama_lbl[] = L"Address";
+  WriteConsoleOutputCharacter(hConsole, rama_lbl, LENGTH(rama_lbl) - 1, pos, &dwBytesWritten);
   pos.X = RAM_X;
   pos.Y = RAM_Y + 2;
-  const char ramc_lbl[] = "Contents";
-  WriteConsoleOutputCharacter(hConsole, ramc_lbl, sizeof(ramc_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t ramc_lbl[] = L"Contents";
+  WriteConsoleOutputCharacter(hConsole, ramc_lbl, LENGTH(ramc_lbl) - 1, pos, &dwBytesWritten);
 
   // Output
   pos.X = OUTPUT_X;
   pos.Y = OUTPUT_Y;
-  const char output_lbl[] = "Output";
-  WriteConsoleOutputCharacter(hConsole, output_lbl, sizeof(output_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t output_lbl[] = L"Output";
+  WriteConsoleOutputCharacter(hConsole, output_lbl, LENGTH(output_lbl) - 1, pos, &dwBytesWritten);
   pos.X = OUTPUT_X+8;
   pos.Y = OUTPUT_Y+2;
-  const char output_box_top[] = "\xc9\xcd\xcd\xcd\xcd\xbb";
-  WriteConsoleOutputCharacter(hConsole, output_box_top, sizeof(output_box_top) - 1, pos, &dwBytesWritten);
+  const wchar_t output_box_top[] = L"\u2554\u2550\u2550\u2550\u2550\u2557";
+  WriteConsoleOutputCharacter(hConsole, output_box_top, LENGTH(output_box_top) - 1, pos, &dwBytesWritten);
   pos.Y = OUTPUT_Y+3;
-  const char output_box_mid[] = "\xba    \xba";
-  WriteConsoleOutputCharacter(hConsole, output_box_mid, sizeof(output_box_mid) - 1, pos, &dwBytesWritten);
+  const wchar_t output_box_mid[] = L"\u2551    \u2551";
+  WriteConsoleOutputCharacter(hConsole, output_box_mid, LENGTH(output_box_mid) - 1, pos, &dwBytesWritten);
   pos.Y = OUTPUT_Y+4;
-  const char output_box_bot[] = "\xc8\xcd\xcd\xcd\xcd\xbc";
-  WriteConsoleOutputCharacter(hConsole, output_box_bot, sizeof(output_box_bot) - 1, pos, &dwBytesWritten);
+  const wchar_t output_box_bot[] = L"\u255a\u2550\u2550\u2550\u2550\u255d";
+  WriteConsoleOutputCharacter(hConsole, output_box_bot, LENGTH(output_box_bot) - 1, pos, &dwBytesWritten);
 
   // Instruction Register
   pos.X = INSTRUCTION_X;
   pos.Y = INSTRUCTION_Y;
-  const char instruction_lbl[] = "Instruction";
-  WriteConsoleOutputCharacter(hConsole, instruction_lbl, sizeof(instruction_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t instruction_lbl[] = L"Instruction";
+  WriteConsoleOutputCharacter(hConsole, instruction_lbl, LENGTH(instruction_lbl) - 1, pos, &dwBytesWritten);
 
   // Instruction Decoder
   pos.X = DECODER_X;
   pos.Y = DECODER_Y;
-  const char decoder_lbl[] = "Decoder Phase";
-  WriteConsoleOutputCharacter(hConsole, decoder_lbl, sizeof(decoder_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t decoder_lbl[] = L"Decoder Phase";
+  WriteConsoleOutputCharacter(hConsole, decoder_lbl, LENGTH(decoder_lbl) - 1, pos, &dwBytesWritten);
   pos.X = DECODER_X;
   pos.Y = DECODER_Y + 1;
-  const char phase_lbl[] = "0 1 2 3 4";
-  WriteConsoleOutputCharacter(hConsole, phase_lbl, sizeof(phase_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t phase_lbl[] = L"0 1 2 3 4";
+  WriteConsoleOutputCharacter(hConsole, phase_lbl, LENGTH(phase_lbl) - 1, pos, &dwBytesWritten);
 
   // Control
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y;
-  const char control_lbl[] = "Control";
-  WriteConsoleOutputCharacter(hConsole, control_lbl, sizeof(control_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t control_lbl[] = L"Control";
+  WriteConsoleOutputCharacter(hConsole, control_lbl, LENGTH(control_lbl) - 1, pos, &dwBytesWritten);
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 1;
-  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
-  WriteConsoleOutputCharacter(hConsole, line_lbl, sizeof(line_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t line_lbl[] = L"HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
+  WriteConsoleOutputCharacter(hConsole, line_lbl, LENGTH(line_lbl) - 1, pos, &dwBytesWritten);
 
   // Ram Map
   pos.X = RAM_MAP_X + 1;
   pos.Y = RAM_MAP_Y;
-  const char ram_map_lbl[] = "RAM Map";
-  WriteConsoleOutputCharacter(hConsole, ram_map_lbl, sizeof(ram_map_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t ram_map_lbl[] = L"RAM Map";
+  WriteConsoleOutputCharacter(hConsole, ram_map_lbl, LENGTH(ram_map_lbl) - 1, pos, &dwBytesWritten);
 
   // Help text
   CONSOLE_SCREEN_BUFFER_INFO sbInfo;
   GetConsoleScreenBufferInfo(hConsole, &sbInfo);
   pos.X = HELP_X;
   pos.Y = sbInfo.dwSize.Y - 1;
-  const char help_lbl[] = "SPACE - Step   h - Toggle halt   r - Reset   f - Faster   s - Slower  q - Quit";
-  WriteConsoleOutputCharacter(hConsole, help_lbl, sizeof(help_lbl) - 1, pos, &dwBytesWritten);
+  const wchar_t help_lbl[] = L"SPACE - Step   h - Toggle halt   r - Reset   f - Faster   s - Slower  q - Quit";
+  WriteConsoleOutputCharacter(hConsole, help_lbl, LENGTH(help_lbl) - 1, pos, &dwBytesWritten);
 
   // Bus Graphic
   int y;
@@ -145,14 +145,14 @@ void printLabels() {
   for(y = BUS_Y + 2; y < CONTROL_Y; y++) {
     pos.Y = y;
     DWORD dwBytesWritten;
-    WriteConsoleOutputCharacter(hConsole, "\xba", 1, pos, &dwBytesWritten);
+    WriteConsoleOutputCharacter(hConsole, L"\u2551", 1, pos, &dwBytesWritten);
   }
 }
 
 void printOutput(const CPU *cpu) {
   printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->register_O);
-  char output[255];
-  DWORD len = sprintf(output, "%3d", cpu->register_O);
+  wchar_t output[255];
+  DWORD len = wsprintf(output, L"%3d", cpu->register_O);
   DWORD dwBytesWritten = 0;
   pos.X = OUTPUT_X + 10;
   pos.Y = OUTPUT_Y + 3;
@@ -162,7 +162,7 @@ void printOutput(const CPU *cpu) {
 void printInstruction(const CPU *cpu) {
   printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, cpu->register_I >> 4);
   printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, cpu->register_I);
-  const char inst_lbl[] = "NOPLDAADDSUBSTALDIJMP                     OUTHLT";
+  const wchar_t inst_lbl[] = L"NOPLDAADDSUBSTALDIJMP                     OUTHLT";
   pos.X = INSTRUCTION_X + 6;
   pos.Y = INSTRUCTION_Y + 2;
   DWORD dwBytesWritten;
@@ -174,10 +174,10 @@ void printDecoder(const CPU *cpu) {
   pos.Y = DECODER_Y + 2;
 
   int phase = cpu->decoder_phase & 0x07;
-  char output[PHASE_COUNT * 2];
+  wchar_t output[PHASE_COUNT * 2];
   int i, offset = 0;
   for(i = 0; i < PHASE_COUNT + 1; i++) {
-    output[offset++] = phase == i ? '^' : ' ';
+    output[offset++] = phase == i ? 0x25B2 : ' '; // BLACK UP-POINTING TRIANGLE
     output[offset++] = ' ';
   }
 
@@ -189,12 +189,12 @@ void printControl(const CPU *cpu) {
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 2;
 
-  char output[CONTROL_LINES * 3];
+  wchar_t output[CONTROL_LINES * 3];
   int i, offset = 0;
   for(i = 0; i < CONTROL_LINES; i++) {
     unsigned short bit = 1 << (15 - i);
-    output[offset++] = cpu->decoder_output & bit ? '\xcd' : ' '; // '─' U+2500 DOS (code page 437) character: C4
-    output[offset++] = cpu->decoder_output & bit ? '\xcd' : ' ';
+    output[offset++] = cpu->decoder_output & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
+    output[offset++] = cpu->decoder_output & bit ? 0x2550 : ' ';
     output[offset++] = ' ';
   }
 
@@ -206,13 +206,13 @@ void printClock(const CPU *cpu) {
   pos.X = CLOCK_X;
   pos.Y = CLOCK_Y + 1;
   if (cpu->halt) {
-    const char clock_lbl[] = "HALT   "; // Extra spaces to cover up "RUNNING"
+    const wchar_t clock_lbl[] = L"HALT   "; // Extra spaces to cover up "RUNNING"
     DWORD dwBytesWritten;
-    WriteConsoleOutputCharacter(hConsole, clock_lbl, sizeof(clock_lbl) - 1, pos, &dwBytesWritten);
+    WriteConsoleOutputCharacter(hConsole, clock_lbl, LENGTH(clock_lbl) - 1, pos, &dwBytesWritten);
   } else {
-    const char clock_lbl[] = "RUNNING";
+    const wchar_t clock_lbl[] = L"RUNNING";
     DWORD dwBytesWritten;
-    WriteConsoleOutputCharacter(hConsole, clock_lbl, sizeof(clock_lbl) - 1, pos, &dwBytesWritten);
+    WriteConsoleOutputCharacter(hConsole, clock_lbl, LENGTH(clock_lbl) - 1, pos, &dwBytesWritten);
   }
 }
 
@@ -220,12 +220,12 @@ void printRamMap(const CPU *cpu) {
   pos.X = RAM_MAP_X;
 
   DWORD dwBytesWritten;
-  char output[9];
+  wchar_t output[9];
   int i, offset;
   for(i = 0; i < 16; i++) {
     offset = 0;
-    output[offset++] = cpu->memory_address == i ? '>' : ' ';
-    sprintf(&output[offset], "%02X 0x%02X", i, RAM[i]);
+    output[offset++] = cpu->memory_address == i ? 0x25BA : ' '; // U+25BA BLACK RIGHT-POINTING POINTER
+    wsprintf(&output[offset], L"%02X 0x%02X", i, RAM[i]);
 
     pos.Y = RAM_MAP_Y + i + 1;
     WriteConsoleOutputCharacter(hConsole, output, 8, pos, &dwBytesWritten);
@@ -233,13 +233,13 @@ void printRamMap(const CPU *cpu) {
 }
 
 void printBusGraphic(const CPU *cpu) {
-  const char sarrow_l[] = "\x11\xc4\xc4\xc4\xc4\xc4\xc4\xc4";
-  const char sarrow_r[] = "\xc4\xc4\xc4\xc4\xc4\xc4\xc4\x10";
-  const char darrow_l[] = "\x11\xcd\xcd\xcd\xcd\xcd\xcd\xcd";
-  const char darrow_r[] = "\xcd\xcd\xcd\xcd\xcd\xcd\xcd\x10";
-  const char spaces[]   = "        ";
+  const wchar_t sarrow_l[] = L"\u25C4\u2500\u2500\u2500\u2500\u2500\u2500\u2500";
+  const wchar_t sarrow_r[] = L"\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u25BA";
+  const wchar_t darrow_l[] = L"\u25C4\u2550\u2550\u2550\u2550\u2550\u2550\u2550";
+  const wchar_t darrow_r[] = L"\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u25BA";
+  const wchar_t spaces[]   = L"        ";
 
-  const char *output;
+  const wchar_t *output;
   unsigned short decoder_output = cpu->decoder_output;
 
   // Memory In
