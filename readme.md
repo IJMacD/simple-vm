@@ -24,6 +24,17 @@ Here's a screenshot demonstrating the program running.
 
 The computer can be controlled via the keyboard and can be made to step through micro-instructions one-by-one.
 
+Usage
+-----
+
+```
+vm [program_file]
+```
+
+The VM can run a binary file of machine instructions provided on the command line. See http://github.com/IJMacD/simple-assembler for an assembler to create the binary file.
+
+If a program file is not provided the three built-in programs can be switched with the number keys.
+
 Components
 ----------
 

@@ -1,10 +1,11 @@
 #include <windows.h>
+#include <stdio.h>
 
 #include "../vm.h"
 
 void *hConsole;
 
-int main() {
+int main(int argc, char *argv[]) {
   // Create blank console
   hConsole =  CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
   SetConsoleActiveScreenBuffer(hConsole);
@@ -39,7 +40,24 @@ int main() {
   ram_type prog1 = PRGRM_1;
   ram_type prog2 = PRGRM_2;
   ram_type prog3 = PRGRM_3;
-  ram_type *RAM = &prog3;
+  ram_type empty = { 0 };
+
+  ram_type *RAM;
+
+  if(argc < 2) {
+    RAM = &prog3;
+  } else {
+    FILE *input = fopen(argv[1], "r");
+
+    if(input == NULL) {
+      fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[1]);
+      exit(-1);
+    }
+
+    RAM = &empty;
+    fgets(*RAM, RAM_SIZE, input);
+  }
+
   unsigned int sleep_delay = DEFAULT_SLEEP;
 
   printLabels();
@@ -78,6 +96,9 @@ int main() {
         render(&cpu, *RAM);
       } else if (c == '3') {
         RAM = &prog3;
+        render(&cpu, *RAM);
+      } else if (c == '0') {
+        RAM = &empty;
         render(&cpu, *RAM);
       }
       else if (c == 'q') return;
