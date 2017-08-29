@@ -4,6 +4,8 @@
 #include "print.h"
 
 void (*output_hook)(unsigned char) = NULL;
+void (*step_hook)() = NULL;
+void (*halt_hook)() = NULL;
 
 void updateALU(CPU *cpu, int subtract) {
   cpu->alu = subtract ? (cpu->register_A - cpu->register_B) : (cpu->register_A + cpu->register_B);
@@ -35,7 +37,10 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   unsigned short decoder_output = cpu->decoder_output;
 
   // Deal with Halt first
-  if (decoder_output & HT) cpu->halt = 1;
+  if (decoder_output & HT) {
+    cpu->halt = 1;
+    if(halt_hook != NULL) halt_hook();
+  }
 
   // Subtract flag affects ALU output
   updateALU(cpu, decoder_output & SU);
@@ -65,9 +70,7 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   }
   if (decoder_output & OI) {
     cpu->register_O = cpu->bus;
-    if(output_hook != NULL) {
-      output_hook(cpu->register_O);
-    }
+    if(output_hook != NULL) output_hook(cpu->register_O);
   }
   if (decoder_output & JP) cpu->program_counter = cpu->bus & 0x0F;
 
@@ -76,6 +79,8 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
 }
 
 void step(CPU *cpu, ram_type RAM) {
+  if (step_hook != NULL) step_hook();
+
   decodeInstruction(cpu);
   executeInstruction(cpu, RAM);
 

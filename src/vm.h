@@ -33,3 +33,5 @@ void step(CPU *, ram_type);
 void reset(CPU *);
 
 extern void (*output_hook)(unsigned char);
+extern void (*step_hook)();
+extern void (*halt_hook)();
