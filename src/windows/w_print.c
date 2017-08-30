@@ -122,7 +122,7 @@ void printLabels() {
   WriteConsoleOutputCharacterA(hConsole, control_lbl, LENGTH(control_lbl) - 1, pos, &dwBytesWritten);
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 1;
-  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE CO JP";
+  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE PO JP DR";
   WriteConsoleOutputCharacterA(hConsole, line_lbl, LENGTH(line_lbl) - 1, pos, &dwBytesWritten);
 
   // Ram Map
@@ -150,13 +150,13 @@ void printLabels() {
 }
 
 void printOutput(const CPU *cpu) {
-  printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->register_O);
-  char output[255];
-  DWORD len = sprintf(output, "%3d", cpu->register_O);
-  DWORD dwBytesWritten = 0;
-  pos.X = OUTPUT_X + 10;
-  pos.Y = OUTPUT_Y + 3;
-  WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
+  // printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->register_O);
+  // char output[255];
+  // DWORD len = sprintf(output, "%3d", cpu->register_O);
+  // DWORD dwBytesWritten = 0;
+  // pos.X = OUTPUT_X + 10;
+  // pos.Y = OUTPUT_Y + 3;
+  // WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
 }
 
 void printInstruction(const CPU *cpu) {
@@ -193,8 +193,8 @@ void printControl(const CPU *cpu) {
   int i, offset = 0;
   for(i = 0; i < CONTROL_LINES; i++) {
     unsigned short bit = 1 << (15 - i);
-    output[offset++] = cpu->decoder_output & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
-    output[offset++] = cpu->decoder_output & bit ? 0x2550 : ' ';
+    output[offset++] = cpu->control_word & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
+    output[offset++] = cpu->control_word & bit ? 0x2550 : ' ';
     output[offset++] = ' ';
   }
 
@@ -242,54 +242,54 @@ void printBusGraphic(const CPU *cpu) {
   const wchar_t spaces[]   = L"        ";
 
   const wchar_t *output;
-  unsigned short decoder_output = cpu->decoder_output;
+  unsigned short control_word = cpu->control_word;
 
   // Memory In
   pos.X = BUS_X - 2;
   pos.Y = RAM_Y + 1;
-  output = (decoder_output & MI) ? sarrow_l : spaces;
+  output = (control_word & MI) ? sarrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // RAM In/Out
   pos.X = BUS_X - 2;
   pos.Y = RAM_Y + 2;
-  output = (decoder_output & RI) ? darrow_l : ((decoder_output & RO) ? darrow_r : spaces);
+  output = (control_word & RI) ? darrow_l : ((control_word & RO) ? darrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Instruction In/Out
   pos.X = BUS_X - 2;
   pos.Y = INSTRUCTION_Y + 1;
-  output = (decoder_output & II) ? darrow_l : ((decoder_output & IO) ? sarrow_r : spaces);
+  output = (control_word & II) ? darrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Counter In/Out
   pos.X = BUS_X + 7;
   pos.Y = COUNTER_Y + 1;
-  output = (decoder_output & CO) ? sarrow_l : ((decoder_output & JP) ? sarrow_r : spaces);
+  output = (control_word & PO) ? sarrow_l : ((control_word & JP) ? sarrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register A In/Out
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_A_Y + 1;
-  output = (decoder_output & AO) ? darrow_l : ((decoder_output & AI) ? darrow_r : spaces);
+  output = (control_word & AO) ? darrow_l : ((control_word & AI) ? darrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // ALU Out
   pos.X = BUS_X + 7;
   pos.Y = ALU_Y + 1;
-  output = (decoder_output & EO) ? darrow_l : spaces;
+  output = (control_word & EO) ? darrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register B In
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_B_Y + 1;
-  // output = (decoder_output & BO) ? darrow_l : ((decoder_output & BI) ? darrow_r : spaces);
-  output = (decoder_output & BI) ? darrow_r : spaces;
+  // output = (control_word & BO) ? darrow_l : ((control_word & BI) ? darrow_r : spaces);
+  output = (control_word & BI) ? darrow_r : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Output In
-  pos.X = BUS_X + 7;
-  pos.Y = OUTPUT_Y + 1;
-  output = (decoder_output & OI) ? darrow_r : spaces;
-  WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
+  // pos.X = BUS_X + 7;
+  // pos.Y = OUTPUT_Y + 1;
+  // output = (control_word & OI) ? darrow_r : spaces;
+  // WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 }

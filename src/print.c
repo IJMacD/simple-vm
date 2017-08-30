@@ -10,7 +10,7 @@ void printRegisterB(const CPU *cpu) {
 }
 
 void printALU(const CPU *cpu) {
-  printRegister8(ALU_X, ALU_Y + 1, cpu->alu);
+  printRegister8(ALU_X, ALU_Y + 1, cpu->alu_output);
 }
 
 void printProgramCounter(const CPU *cpu) {

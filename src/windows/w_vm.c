@@ -28,12 +28,12 @@ int main(int argc, char *argv[]) {
     .register_A = 0x00,
     .register_B = 0x00,
     .register_I = 0x00,         // Instruction register
-    .register_O = 0x00,         // Output register
+    .alu_output = 0,
+    .alu_flags = 0,
     .program_counter = 0x00,
     .memory_address = 0x00,
-    .alu = 0x00,
     .decoder_phase = 0x00,
-    .decoder_output = 0x00,
+    .control_word = 0x00,
     .halt = 0x00
   };
 
