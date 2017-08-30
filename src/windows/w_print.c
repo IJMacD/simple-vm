@@ -31,6 +31,15 @@ void printRegister8(int x, int y, unsigned char reg) {
   WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
 }
 
+void printRegister16(int x, int y, unsigned char reg) {
+  char output[255];
+  DWORD len = sprintf(output, "0x%04X", reg);
+  DWORD dwBytesWritten = 0;
+  pos.X = x;
+  pos.Y = y;
+  WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
+}
+
 void printLabels() {
 
   // RegisterA
@@ -150,23 +159,25 @@ void printLabels() {
 }
 
 void printOutput(const CPU *cpu) {
-  // printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->register_O);
-  // char output[255];
-  // DWORD len = sprintf(output, "%3d", cpu->register_O);
-  // DWORD dwBytesWritten = 0;
-  // pos.X = OUTPUT_X + 10;
-  // pos.Y = OUTPUT_Y + 3;
-  // WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
+  printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->port_3);
+  char output[255];
+  DWORD len = sprintf(output, "%3d", cpu->port_3);
+  DWORD dwBytesWritten = 0;
+  pos.X = OUTPUT_X + 10;
+  pos.Y = OUTPUT_Y + 3;
+  WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
 }
 
 void printInstruction(const CPU *cpu) {
-  printRegister4(INSTRUCTION_X, INSTRUCTION_Y + 1, cpu->register_I >> 4);
-  printRegister4(INSTRUCTION_X + 10, INSTRUCTION_Y + 1, cpu->register_I);
-  char inst_lbl[] = "NOPLDAADDSUBSTALDIJMP                     OUTHLT";
-  pos.X = INSTRUCTION_X + 6;
+  printRegister8(INSTRUCTION_X, INSTRUCTION_Y + 1, cpu->register_I);
+  char label[10] = "          ";
+  const char *mne = mne_labels[cpu->register_I];
+  memcpy(label, mne, strlen(mne));
+
+  pos.X = INSTRUCTION_X + 5;
   pos.Y = INSTRUCTION_Y + 2;
   DWORD dwBytesWritten;
-  WriteConsoleOutputCharacterA(hConsole, &inst_lbl[(cpu->register_I >> 4) * 3], 3, pos, &dwBytesWritten);
+  WriteConsoleOutputCharacterA(hConsole, label, sizeof(label), pos, &dwBytesWritten);
 }
 
 void printDecoder(const CPU *cpu) {
@@ -220,13 +231,13 @@ void printRamMap(const CPU *cpu, const ram_type RAM) {
   pos.X = RAM_MAP_X;
 
   DWORD dwBytesWritten;
-  wchar_t output[12] = { 0 };
+  wchar_t output[16] = { 0 };
   int i, offset;
   for(i = 0; i < 16; i++) {
     offset = 0;
     output[offset++] = cpu->memory_address == i ? 0x25BA : ' '; // U+25BA BLACK RIGHT-POINTING POINTER
-    wsprintfW(&output[offset], L"%02X 0x%02X", i, RAM[i]);
-    offset += 7;
+    wsprintfW(&output[offset], L"0x%04X 0x%02X", i, RAM[i]);
+    offset += 11;
     output[offset++] = cpu->program_counter == i ? 0x25C4 : ' '; // U+25C4 BLACK LEFT-POINTING POINTER
 
     pos.Y = RAM_MAP_Y + i + 1;
@@ -256,7 +267,7 @@ void printBusGraphic(const CPU *cpu) {
   output = (control_word & RI) ? darrow_l : ((control_word & RO) ? darrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
-  // Instruction In/Out
+  // Instruction In
   pos.X = BUS_X - 2;
   pos.Y = INSTRUCTION_Y + 1;
   output = (control_word & II) ? darrow_l : spaces;
@@ -288,8 +299,8 @@ void printBusGraphic(const CPU *cpu) {
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Output In
-  // pos.X = BUS_X + 7;
-  // pos.Y = OUTPUT_Y + 1;
-  // output = (control_word & OI) ? darrow_r : spaces;
-  // WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
+  pos.X = BUS_X + 7;
+  pos.Y = OUTPUT_Y + 1;
+  output = (control_word & O3) ? darrow_r : spaces;
+  WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 }

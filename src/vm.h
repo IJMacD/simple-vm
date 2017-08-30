@@ -6,9 +6,9 @@
 
 #define RAM_SIZE 65536
 
-#define PRGRM_1 { LDA | 0x0E, ADD | 0x0F, _OUT, HLT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 14 }
-#define PRGRM_2 { MVI_A | 0x03, STA | 0x0F, MVI_A | 0x00, ADD | 0x0F, _OUT, JMP | 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-#define PRGRM_3 { LDA | 0x0F, _OUT, STA | 0x0D, ADD | 0x0E, STA | 0x0F, LDA | 0x0D, STA | 0x0E, JMP | 0x00, 0, 0, 0, 0, 0, 0, 0, 1 }
+#define PRGRM_1 { LDA, 0x0F, 0x00, MOV_BA, LDA, 0x0E, 0x00, ADD_B, _OUT, 0x03, HLT, 0, 0, 0, 28, 14 }
+#define PRGRM_2 { MVI_A, 0x00, MVI_B, 0x03, _OUT, 0x03, ADD_B, JMP, 0x04, 0x00, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define PRGRM_3 { LDA, 0x1F, 0x00, _OUT, 0x03, STA, 0x1D, 0x00, LDA, 0x1E, 0x00, MOV_BA, LDA, 0x1F, 0x00, ADD_B, STA, 0x1F, 0x00, LDA, 0x1D, 0x00, STA, 0x1E, 0x00, JMP, 0x00, 0x00, 0, 0, 0, 1 }
 
 typedef struct {
   unsigned short bus;

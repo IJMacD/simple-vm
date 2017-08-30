@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   ram_type *RAM;
 
   if(argc < 2) {
-    RAM = &prog3;
+    RAM = &prog1;
   } else {
     FILE *input = fopen(argv[1], "r");
 

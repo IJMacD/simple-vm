@@ -14,14 +14,14 @@ void printALU(const CPU *cpu) {
 }
 
 void printProgramCounter(const CPU *cpu) {
-  printRegister4(COUNTER_X, COUNTER_Y + 1, cpu->program_counter);
+  printRegister16(COUNTER_X, COUNTER_Y + 1, cpu->program_counter);
 }
 
 void printBus(const CPU *cpu) {
-  printRegister8(BUS_X, BUS_Y + 1, cpu->bus);
+  printRegister16(BUS_X, BUS_Y + 1, cpu->bus);
 }
 
 void printRam(const CPU *cpu, const ram_type RAM) {
-  printRegister4(RAM_X + 9, RAM_Y + 1, cpu->memory_address);
-  printRegister8(RAM_X + 9, RAM_Y + 2, RAM[cpu->memory_address & 0x0F]);
+  printRegister16(RAM_X + 9, RAM_Y + 1, cpu->memory_address);
+  printRegister8(RAM_X + 9, RAM_Y + 2, RAM[cpu->memory_address & 0xFFFF]);
 }

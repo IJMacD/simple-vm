@@ -20,18 +20,18 @@
 #define PO  0b00000000000000000000000000000100  // Program counter out
 #define JP  0b00000000000000000000000000000010  // Jump (program counter in)
 #define DR  0b00000000000000000000000000000001  // Decoder reset (T-state)
-#define I1  // Input 1 in
-#define I2  // Input 2 in
-#define LA  // Logical AND
-#define LO  // Logical OR
-#define LX  // Logical XOR
-#define TI  // TMP Register in
-#define TO  // TMP Register out
-#define BO  // B register out
-#define CI  // C register in
-#define CO  // C register out
-#define O3  // Output 3 out
-#define O4  // Output 4 out
+#define I1  0b00000000000000000000000000000000  // Input 1 in
+#define I2  0b00000000000000000000000000000000  // Input 2 in
+#define LA  0b00000000000000000000000000000000  // Logical AND
+#define LO  0b00000000000000000000000000000000  // Logical OR
+#define LX  0b00000000000000000000000000000000  // Logical XOR
+#define TI  0b00000000000000000000000000000000  // TMP Register in
+#define TO  0b00000000000000000000000000000000  // TMP Register out
+#define BO  0b00000000000000000000000000000000  // B register out
+#define CI  0b00000000000000000000000000000000  // C register in
+#define CO  0b00000000000000000000000000000000  // C register out
+#define O3  0b00000000000000000000000000010000  // Output 3 out
+#define O4  0b00000000000000000000000000000000  // Output 4 out
 
 
 /*************
@@ -132,5 +132,6 @@
 /*****************
  * Microcode
  *****************/
-
 extern const uint32_t u_instructions[256][16];
+
+extern const char *mne_labels[256];

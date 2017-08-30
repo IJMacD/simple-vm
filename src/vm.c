@@ -46,31 +46,31 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
 
   // Then we need to deal with outputs
   // note - latest definition wins
-  if (control_word & RO) cpu->bus = RAM[cpu->memory_address & 0x0F];
+  if (control_word & RO) cpu->bus = RAM[cpu->memory_address & 0xFFFF];
   if (control_word & AO) cpu->bus = cpu->register_A;
   if (control_word & EO) cpu->bus = cpu->alu_output;
   if (control_word & PO) cpu->bus = cpu->program_counter;
 
   // Now let's have some inputs
-  if (control_word & MI) cpu->memory_address = cpu->bus & 0x0F;
-  if (control_word & RI) RAM[cpu->memory_address & 0x0F] = cpu->bus;
+  if (control_word & MI) cpu->memory_address = cpu->bus & 0xFFFF;
+  if (control_word & RI) RAM[cpu->memory_address & 0xFFFF] = cpu->bus & 0xFF;
   if (control_word & II) {
-    cpu->register_I = cpu->bus;
+    cpu->register_I = cpu->bus & 0xFF;
     decodeInstruction(cpu);
   }
   if (control_word & AI) {
-    cpu->register_A = cpu->bus;
+    cpu->register_A = cpu->bus & 0xFF;
     updateALU(cpu, control_word & SU);
   }
   if (control_word & BI) {
-    cpu->register_B = cpu->bus;
+    cpu->register_B = cpu->bus & 0xFF;
     updateALU(cpu, control_word & SU);
   }
-  // if (control_word & OI) {
-  //   cpu->register_O = cpu->bus;
-  //   if(output_hook != NULL) output_hook(cpu->register_O);
-  // }
-  if (control_word & JP) cpu->program_counter = cpu->bus & 0x0F;
+  if (control_word & O3) {
+    cpu->port_3 = cpu->bus & 0xFF;
+    if(output_hook != NULL) output_hook(cpu->port_3);
+  }
+  if (control_word & JP) cpu->program_counter = cpu->bus & 0xFFFF;
 
   // Finally do we increment the program counter?
   if (control_word & CE){
@@ -99,7 +99,7 @@ void reset(CPU *cpu) {
   cpu->register_A = 0;
   cpu->register_B = 0;
   cpu->register_I = 0;
-  // cpu->register_O = 0;
+  cpu->port_3 = 0;
   cpu->alu_output = cpu->register_A + cpu->register_B;
   cpu->control_word = 0;
 }

@@ -1,18 +1,18 @@
-#define REGISTER_A_X  50
+#define REGISTER_A_X  46
 #define REGISTER_A_Y   6
-#define REGISTER_B_X  50
+#define REGISTER_B_X  REGISTER_A_X
 #define REGISTER_B_Y  12
-#define ALU_X         52
+#define ALU_X         REGISTER_A_X + 2
 #define ALU_Y          9
-#define COUNTER_X     50
+#define COUNTER_X     REGISTER_A_X
 #define COUNTER_Y      3
-#define BUS_X         29
+#define BUS_X         28
 #define BUS_Y          1
 #define CLOCK_X        2
 #define CLOCK_Y        1
 #define RAM_X          2
 #define RAM_Y          4
-#define OUTPUT_X      50
+#define OUTPUT_X      REGISTER_A_X
 #define OUTPUT_Y      15
 #define INSTRUCTION_X  2
 #define INSTRUCTION_Y  8
@@ -22,7 +22,7 @@
 #define CONTROL_Y     19
 #define HELP_X         1
 #define HELP_Y        22
-#define RAM_MAP_X     67
+#define RAM_MAP_X     REGISTER_A_X + 16
 #define RAM_MAP_Y      1
 
 #define PRINTF_BINARY_PATTERN_INT4 "%c%c%c%c"
@@ -45,6 +45,7 @@
 
 void printRegister4();
 void printRegister8();
+void printRegister16();
 
 void printLabels();
 
