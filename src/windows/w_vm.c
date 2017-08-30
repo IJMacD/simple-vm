@@ -76,7 +76,6 @@ int main(int argc, char *argv[]) {
         reset(&cpu);
         // Render will:
         // * decode instruction;
-        // * update relevant registers (execute);
         // * update display
         render(&cpu, *RAM);
       }
