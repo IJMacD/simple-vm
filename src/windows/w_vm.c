@@ -47,15 +47,28 @@ int main(int argc, char *argv[]) {
   if(argc < 2) {
     RAM = &prog1;
   } else {
-    FILE *input = fopen(argv[1], "r");
+    int argi = 1;
 
-    if(input == NULL) {
-      fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[1]);
-      exit(-1);
+    if(!strcmp(argv[argi], "-h")) {
+      cpu.halt = 1;
+      argi++;
     }
 
-    RAM = &empty;
-    fgets(*RAM, RAM_SIZE, input);
+    if(argc > argi) {
+
+      FILE *input = fopen(argv[argi], "r");
+
+      if(input == NULL) {
+        fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[argi]);
+        exit(-1);
+      }
+
+      RAM = &empty;
+      fgets(*RAM, RAM_SIZE, input);
+    }
+    else {
+      RAM = &prog3;
+    }
   }
 
   unsigned int sleep_delay = DEFAULT_SLEEP;
@@ -76,7 +89,6 @@ int main(int argc, char *argv[]) {
         reset(&cpu);
         // Render will:
         // * decode instruction;
-        // * update relevant registers (execute);
         // * update display
         render(&cpu, *RAM);
       }

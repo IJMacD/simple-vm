@@ -80,7 +80,6 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
 
 void render(CPU *cpu, ram_type RAM) {
   decodeInstruction(cpu);
-  executeInstruction(cpu, RAM);
 
   updateDisplay(cpu, RAM);
 }
@@ -88,14 +87,18 @@ void render(CPU *cpu, ram_type RAM) {
 void step(CPU *cpu, ram_type RAM) {
   if (step_hook != NULL) step_hook();
 
-  render(cpu, RAM);
-
   cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
+
+  decodeInstruction(cpu);
+  executeInstruction(cpu, RAM);
+
+  updateDisplay(cpu, RAM);
 }
 
 void reset(CPU *cpu) {
   cpu->program_counter = 0;
   cpu->decoder_phase = 0;
+  cpu->memory_address = 0;
   cpu->register_A = 0;
   cpu->register_B = 0;
   cpu->register_I = 0;
