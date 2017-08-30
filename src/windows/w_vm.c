@@ -44,13 +44,33 @@ int main(int argc, char *argv[]) {
 
   ram_type *RAM;
 
-  if(argc < 2) {
-    RAM = &prog1;
-  } else {
+  unsigned int sleep_delay = DEFAULT_SLEEP;
+
+  if(argc >= 2) {
     int argi = 1;
 
-    if(!strcmp(argv[argi], "-h")) {
-      cpu.halt = 1;
+    while(argi < argc && argv[argi][0] == '-') {
+      switch(argv[argi][1]) {
+        case 'h':
+          cpu.halt = 1;
+          break;
+        case 'd':
+          if(++argi < argc) {
+            sscanf(argv[argi], "%d", &sleep_delay);
+          }
+          break;
+        case 'p':
+          if(++argi < argc) {
+            int p;
+            sscanf(argv[argi], "%d", &p);
+            switch(p) {
+              case 1: RAM = &prog1; break;
+              case 2: RAM = &prog2; break;
+              case 3: RAM = &prog3; break;
+            }
+          }
+          break;
+      }
       argi++;
     }
 
@@ -66,12 +86,11 @@ int main(int argc, char *argv[]) {
       RAM = &empty;
       fgets(*RAM, RAM_SIZE, input);
     }
-    else {
-      RAM = &prog3;
-    }
   }
 
-  unsigned int sleep_delay = DEFAULT_SLEEP;
+  if (RAM == NULL) {
+    RAM = &prog1;
+  }
 
   printLabels();
 

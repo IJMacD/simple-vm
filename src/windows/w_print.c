@@ -172,7 +172,9 @@ void printInstruction(const CPU *cpu) {
   printRegister8(INSTRUCTION_X, INSTRUCTION_Y + 1, cpu->register_I);
   char label[10] = "          ";
   const char *mne = mne_labels[cpu->register_I];
-  memcpy(label, mne, strlen(mne));
+  if (mne != NULL) {
+    memcpy(label, mne, strlen(mne));
+  }
 
   pos.X = INSTRUCTION_X + 5;
   pos.Y = INSTRUCTION_Y + 2;
