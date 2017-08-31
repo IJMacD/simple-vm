@@ -59,32 +59,27 @@ int main(int argc, char *argv[]) {
             sscanf(argv[argi], "%d", &sleep_delay);
           }
           break;
-        case 'p':
-          if(++argi < argc) {
-            int p;
-            sscanf(argv[argi], "%d", &p);
-            switch(p) {
-              case 1: RAM = &prog1; break;
-              case 2: RAM = &prog2; break;
-              case 3: RAM = &prog3; break;
-            }
-          }
-          break;
       }
       argi++;
     }
 
     if(argc > argi) {
 
-      FILE *input = fopen(argv[argi], "r");
+      if(strlen(argv[argi]) == 1 && argv[argi][0] == '1') RAM = &prog1;
+      else if(strlen(argv[argi]) == 1 && argv[argi][0] == '2') RAM = &prog2;
+      else if(strlen(argv[argi]) == 1 && argv[argi][0] == '3') RAM = &prog3;
+      else {
 
-      if(input == NULL) {
-        fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[argi]);
-        exit(-1);
+        FILE *input = fopen(argv[argi], "r");
+
+        if(input == NULL) {
+          fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[argi]);
+          exit(-1);
+        }
+
+        RAM = &empty;
+        fgets(*RAM, RAM_SIZE, input);
       }
-
-      RAM = &empty;
-      fgets(*RAM, RAM_SIZE, input);
     }
   }
 
