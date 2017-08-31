@@ -31,7 +31,7 @@ void printRegister8(int x, int y, unsigned char reg) {
   WriteConsoleOutputCharacterA(hConsole, output, len, pos, &dwBytesWritten);
 }
 
-void printRegister16(int x, int y, unsigned char reg) {
+void printRegister16(int x, int y, unsigned short reg) {
   char output[255];
   DWORD len = sprintf(output, "0x%04X", reg);
   DWORD dwBytesWritten = 0;
@@ -286,7 +286,7 @@ void printBusGraphic(const CPU *cpu) {
   // Memory In
   pos.X = BUS_X - 2;
   pos.Y = RAM_Y + 1;
-  output = (control_word & MI) ? sarrow_l : spaces;
+  output = (control_word & MI) ? darrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // RAM In/Out
@@ -298,48 +298,48 @@ void printBusGraphic(const CPU *cpu) {
   // Instruction In
   pos.X = BUS_X - 2;
   pos.Y = INSTRUCTION_Y + 1;
-  output = (control_word & II) ? darrow_l : spaces;
+  output = (control_word & II) ? sarrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Counter In/Out
   pos.X = BUS_X - 2;
   pos.Y = COUNTER_Y + 1;
-  output = (control_word & PO) ? sarrow_r : ((control_word & JP) ? sarrow_l : spaces);
+  output = (control_word & PO) ? darrow_r : ((control_word & JP) ? darrow_l : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register A In/Out
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_A_Y + 1;
-  output = (control_word & AO) ? darrow_l : ((control_word & AI) ? darrow_r : spaces);
+  output = (control_word & AO) ? sarrow_l : ((control_word & AI) ? sarrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // ALU Out
   pos.X = BUS_X + 7;
   pos.Y = ALU_Y + 1;
-  output = (control_word & EO) ? darrow_l : spaces;
+  output = (control_word & EO) ? sarrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register B In/Out
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_B_Y + 1;
-  output = (control_word & BO) ? darrow_l : ((control_word & BI) ? darrow_r : spaces);
+  output = (control_word & BO) ? sarrow_l : ((control_word & BI) ? sarrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register C In/Out
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_C_Y + 1;
-  output = (control_word & CO) ? darrow_l : ((control_word & CI) ? darrow_r : spaces);
+  output = (control_word & CO) ? sarrow_l : ((control_word & CI) ? sarrow_r : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register TMP In
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_TMP_Y + 1;
-  output = (control_word & TI) ? darrow_r : spaces;
+  output = (control_word & TI) ? sarrow_r : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Output In
   pos.X = BUS_X + 7;
   pos.Y = OUTPUT_Y + 1;
-  output = (control_word & O3) ? darrow_r : spaces;
+  output = (control_word & O3) ? sarrow_r : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 }

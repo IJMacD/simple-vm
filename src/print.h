@@ -19,7 +19,7 @@
 #define OUTPUT_X      REGISTER_A_X
 #define OUTPUT_Y      REGISTER_C_Y + 3
 #define INSTRUCTION_X COUNTER_X
-#define INSTRUCTION_Y RAM_Y + 4
+#define INSTRUCTION_Y RAM_Y + 5
 #define DECODER_X     COUNTER_X
 #define DECODER_Y     INSTRUCTION_Y + 4
 #define CONTROL_X     COUNTER_X

@@ -28,6 +28,7 @@ void printBus(const CPU *cpu) {
 void printRam(const CPU *cpu, const ram_type RAM) {
   printRegister16(RAM_X + 9, RAM_Y + 1, cpu->memory_address);
   printRegister8(RAM_X + 9, RAM_Y + 2, RAM[cpu->memory_address & 0xFFFF]);
+  printRegister8(RAM_X + 9, RAM_Y + 3, RAM[(cpu->memory_address + 1) & 0xFFFF]);
 }
 
 void updateDisplay(const CPU *cpu, const ram_type RAM) {

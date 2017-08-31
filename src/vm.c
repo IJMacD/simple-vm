@@ -33,7 +33,14 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   /**********
    * OUTPUTS - writing to bus
    **********/
-  if (control_word & RO) cpu->bus = RAM[cpu->memory_address & 0xFFFF];
+  if (control_word & RO){
+    // 8086 Actually reads two consecutive bytes from RAM at a time
+    // for 16-bit address word size
+    cpu->bus = RAM[cpu->memory_address & 0xFFFF];
+    if (cpu->memory_address < RAM_SIZE - 1) {
+      cpu->bus |= RAM[(cpu->memory_address + 1) & 0xFFFF] << 8;
+    }
+  }
   if (control_word & AO) cpu->bus = cpu->register_A;
   if (control_word & EO) cpu->bus = cpu->alu_output;
   if (control_word & PO) cpu->bus = cpu->program_counter;
@@ -74,7 +81,6 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
    ************/
   if (control_word & CE)
     cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
-
 
   // Cheat: This should not be inside execute
   printDecoder(cpu);
