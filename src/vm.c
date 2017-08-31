@@ -7,24 +7,10 @@ void (*output_hook)(unsigned char) = NULL;
 void (*step_hook)() = NULL;
 void (*halt_hook)() = NULL;
 
-void updateALU(CPU *cpu, int subtract) {
-  cpu->alu_output = subtract ? (cpu->register_A - cpu->register_B) : (cpu->register_A + cpu->register_B);
-}
-
-void updateDisplay(const CPU *cpu, const ram_type RAM) {
-  printRegisterA(cpu);
-  printRegisterB(cpu);
-  printALU(cpu);
-  printProgramCounter(cpu);
-  printBus(cpu);
-  printRam(cpu, RAM);
-  printOutput(cpu);
-  printInstruction(cpu);
-  // printDecoder(cpu);
-  printControl(cpu);
-  printClock(cpu);
-  printRamMap(cpu, RAM);
-  printBusGraphic(cpu);
+void updateALU(CPU *cpu) {
+  cpu->alu_output = (cpu->control_word & SU) ?
+    (cpu->register_A - cpu->register_TMP) :
+    (cpu->register_A + cpu->register_TMP);
 }
 
 void decodeInstruction(CPU *cpu) {
@@ -33,7 +19,7 @@ void decodeInstruction(CPU *cpu) {
 }
 
 void executeInstruction(CPU *cpu, ram_type RAM) {
-  unsigned short control_word = cpu->control_word;
+  unsigned int control_word = cpu->control_word;
 
   // Deal with Halt first
   if (control_word & HT) {
@@ -41,44 +27,56 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
     if(halt_hook != NULL) halt_hook();
   }
 
-  // Subtract flag affects ALU output
-  updateALU(cpu, control_word & SU);
+  // Any time SU, AI, TI are high ALU needs to be updated
+  updateALU(cpu);
 
-  // Then we need to deal with outputs
-  // note - latest definition wins
+  /**********
+   * OUTPUTS - writing to bus
+   **********/
   if (control_word & RO) cpu->bus = RAM[cpu->memory_address & 0xFFFF];
   if (control_word & AO) cpu->bus = cpu->register_A;
   if (control_word & EO) cpu->bus = cpu->alu_output;
   if (control_word & PO) cpu->bus = cpu->program_counter;
+  if (control_word & TO) cpu->bus = cpu->register_TMP;
+  if (control_word & BO) cpu->bus = cpu->register_B;
+  if (control_word & CO) cpu->bus = cpu->register_C;
 
-  // Now let's have some inputs
+  /*********
+   * INPUTS - reading from bus
+   ********/
   if (control_word & MI) cpu->memory_address = cpu->bus & 0xFFFF;
   if (control_word & RI) RAM[cpu->memory_address & 0xFFFF] = cpu->bus & 0xFF;
   if (control_word & II) {
     cpu->register_I = cpu->bus & 0xFF;
     decodeInstruction(cpu);
   }
-  if (control_word & AI) {
-    cpu->register_A = cpu->bus & 0xFF;
-    updateALU(cpu, control_word & SU);
+  if (control_word & AI) cpu->register_A = cpu->bus;
+  if (control_word & EF) {
+    cpu->alu_flags = 0;
+    if (cpu->register_A & 0x80) cpu->alu_flags |= ALU_FLAG_S;
+    if (cpu->register_A == 0) cpu->alu_flags |= ALU_FLAG_Z;
   }
-  if (control_word & BI) {
-    cpu->register_B = cpu->bus & 0xFF;
-    updateALU(cpu, control_word & SU);
-  }
+  if (control_word & BI) cpu->register_B = cpu->bus & 0xFF;
+  if (control_word & CI) cpu->register_C = cpu->bus & 0xFF;
+  if (control_word & TI) cpu->register_TMP = cpu->bus;
   if (control_word & O3) {
     cpu->port_3 = cpu->bus & 0xFF;
     if(output_hook != NULL) output_hook(cpu->port_3);
   }
   if (control_word & JP) cpu->program_counter = cpu->bus & 0xFFFF;
 
-  // Finally do we increment the program counter?
+  // After the input phase update ALU again
+  updateALU(cpu);
+
+  /************
+   * CONTROL
+   ************/
   if (control_word & CE)
     cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
 
+  // Cheat: This should not be inside execute
   printDecoder(cpu);
 
-  // For real finally, shall we short circuit the rest of the decoder phases?
   if (control_word & DR){
     cpu->decoder_phase = 0;
   }

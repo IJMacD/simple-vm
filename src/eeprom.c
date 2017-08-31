@@ -4,12 +4,12 @@
 
 const uint32_t u_instructions[256][16] = {
   [NOP   ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [INR_B ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [DCR_B ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [INR_B ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [DCR_B ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
   [MVI_B ] = { MI|PO,  RO|II|CE,  PO|MI|CE,      RO|BI|DR,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [INR_C ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [DCR_C ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [MVI_C ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [INR_C ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [DCR_C ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [MVI_C ] = { MI|PO,  RO|II|CE,  PO|MI|CE,      RO|CI|DR,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
 
   [RAL   ] = { MI|PO,  RO|II|CE, 0 },
   [RAR   ] = { MI|PO,  RO|II|CE, 0 },
@@ -18,32 +18,32 @@ const uint32_t u_instructions[256][16] = {
 
   [STA   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|MI|CE, AO|RI|DR },
   [LDA   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|MI|CE, RO|AI|DR },
-  [INR_A ] = { MI|PO,  RO|II|CE, 0 },
-  [DCR_A ] = { MI|PO,  RO|II|CE, 0 },
+  [INR_A ] = { MI|PO,  RO|II|CE, EF },
+  [DCR_A ] = { MI|PO,  RO|II|CE, EF },
   [MVI_A ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|AI|DR },
 
-  [MOV_BC] = { MI|PO,  RO|II|CE, 0 },
+  [MOV_BC] = { MI|PO,  RO|II|CE, CO|BI|DR },
   [MOV_BA] = { MI|PO,  RO|II|CE, AO|BI|DR },
-  [MOV_CB] = { MI|PO,  RO|II|CE, 0 },
-  [MOV_CA] = { MI|PO,  RO|II|CE, 0 },
+  [MOV_CB] = { MI|PO,  RO|II|CE, BO|CI|DR },
+  [MOV_CA] = { MI|PO,  RO|II|CE, AO|CI|DR },
 
   [HLT   ] = { MI|PO,  RO|II|CE, HT },
-  [MOV_AB] = { MI|PO,  RO|II|CE, 0 },
-  [MOV_AC] = { MI|PO,  RO|II|CE, 0 },
+  [MOV_AB] = { MI|PO,  RO|II|CE, BO|AI|DR },
+  [MOV_AC] = { MI|PO,  RO|II|CE, CO|AI|DR },
 
-  [ADD_B ] = { MI|PO,  RO|II|CE, BO|TI, EO|AI|DR },
-  [ADD_C ] = { MI|PO,  RO|II|CE, CO|TI, EO|AI|DR },
+  [ADD_B ] = { MI|PO,  RO|II|CE, BO|TI, EO|AI|EF|DR },
+  [ADD_C ] = { MI|PO,  RO|II|CE, CO|TI, EO|AI|EF|DR },
 
-  [SUB_B ] = { MI|PO,  RO|II|CE, BO|TI, EO|SU|AI|DR },
-  [SUB_C ] = { MI|PO,  RO|II|CE, CO|TI, EO|SU|AI|DR },
+  [SUB_B ] = { MI|PO,  RO|II|CE, BO|TI, EO|SU|AI|EF|DR },
+  [SUB_C ] = { MI|PO,  RO|II|CE, CO|TI, EO|SU|AI|EF|DR },
 
-  [ANA_B ] = { MI|PO,  RO|II|CE, 0 },
-  [ANA_C ] = { MI|PO,  RO|II|CE, 0 },
-  [XRA_B ] = { MI|PO,  RO|II|CE, 0 },
-  [XRA_C ] = { MI|PO,  RO|II|CE, 0 },
+  [ANA_B ] = { MI|PO,  RO|II|CE, EF },
+  [ANA_C ] = { MI|PO,  RO|II|CE, EF },
+  [XRA_B ] = { MI|PO,  RO|II|CE, EF },
+  [XRA_C ] = { MI|PO,  RO|II|CE, EF },
 
-  [ORA_B ] = { MI|PO,  RO|II|CE, 0 },
-  [ORA_C ] = { MI|PO,  RO|II|CE, 0 },
+  [ORA_B ] = { MI|PO,  RO|II|CE, EF },
+  [ORA_C ] = { MI|PO,  RO|II|CE, EF },
 
   [JNZ   ] = { MI|PO,  RO|II|CE, 0 },
   [JMP   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|JP|DR },
@@ -54,10 +54,10 @@ const uint32_t u_instructions[256][16] = {
   [_OUT  ] = { MI|PO,  RO|II|CE, AO|O3|CE|DR },
   [_IN   ] = { MI|PO,  RO|II|CE, 0 },
 
-  [ANI   ] = { MI|PO,  RO|II|CE, 0 },
-  [XRI   ] = { MI|PO,  RO|II|CE, 0 },
+  [ANI   ] = { MI|PO,  RO|II|CE, EF },
+  [XRI   ] = { MI|PO,  RO|II|CE, EF },
 
-  [ORI   ] = { MI|PO,  RO|II|CE, 0 },
+  [ORI   ] = { MI|PO,  RO|II|CE, EF },
   [JM    ] = { MI|PO,  RO|II|CE, 0 },
 };
 

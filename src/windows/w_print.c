@@ -47,12 +47,22 @@ void printLabels() {
   pos.Y = REGISTER_A_Y;
   const char rega_lbl[] = "Register A";
   WriteConsoleOutputCharacterA(hConsole, rega_lbl, LENGTH(rega_lbl) - 1, pos, &dwBytesWritten);
+  pos.X = REGISTER_A_X;
+  pos.Y = REGISTER_A_Y + 2;
+  const char flag_lbl[] = "Flag";
+  WriteConsoleOutputCharacterA(hConsole, flag_lbl, LENGTH(flag_lbl) - 1, pos, &dwBytesWritten);
 
   // RegisterB
   pos.X = REGISTER_B_X;
   pos.Y = REGISTER_B_Y;
   const char regb_lbl[] = "Register B";
   WriteConsoleOutputCharacterA(hConsole, regb_lbl, LENGTH(regb_lbl) - 1, pos, &dwBytesWritten);
+
+  // RegisterTMP
+  pos.X = REGISTER_TMP_X;
+  pos.Y = REGISTER_TMP_Y;
+  const char regtmp_lbl[] = "Register TMP";
+  WriteConsoleOutputCharacterA(hConsole, regtmp_lbl, LENGTH(regtmp_lbl) - 1, pos, &dwBytesWritten);
 
   // ALU
   pos.X = ALU_X;
@@ -158,6 +168,16 @@ void printLabels() {
   }
 }
 
+void printRegisterA(const CPU *cpu) {
+  printRegister8(REGISTER_A_X, REGISTER_A_Y + 1, cpu->register_A);
+  char output[8];
+  output[0] = (cpu->alu_flags & ALU_FLAG_S) ? 'S' : ' ';
+  output[1] = (cpu->alu_flags & ALU_FLAG_Z) ? 'Z' : ' ';
+  pos.X = REGISTER_A_X + 5;
+  pos.Y = REGISTER_A_Y + 2;
+  WriteConsoleOutputCharacterA(hConsole, output, 2, pos, &dwBytesWritten);
+}
+
 void printOutput(const CPU *cpu) {
   printRegister8(OUTPUT_X, OUTPUT_Y + 1, cpu->port_3);
   char output[255];
@@ -205,7 +225,7 @@ void printControl(const CPU *cpu) {
   wchar_t output[CONTROL_LINES * 3];
   int i, offset = 0;
   for(i = 0; i < CONTROL_LINES; i++) {
-    unsigned short bit = 1 << (15 - i);
+    unsigned int bit = 1 << (31 - i);
     output[offset++] = cpu->control_word & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
     output[offset++] = cpu->control_word & bit ? 0x2550 : ' ';
     output[offset++] = ' ';
@@ -255,7 +275,7 @@ void printBusGraphic(const CPU *cpu) {
   const wchar_t spaces[]   = L"        ";
 
   const wchar_t *output;
-  unsigned short control_word = cpu->control_word;
+  unsigned int control_word = cpu->control_word;
 
   // Memory In
   pos.X = BUS_X - 2;
@@ -276,9 +296,9 @@ void printBusGraphic(const CPU *cpu) {
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Counter In/Out
-  pos.X = BUS_X + 7;
+  pos.X = BUS_X - 2;
   pos.Y = COUNTER_Y + 1;
-  output = (control_word & PO) ? sarrow_l : ((control_word & JP) ? sarrow_r : spaces);
+  output = (control_word & PO) ? sarrow_r : ((control_word & JP) ? sarrow_l : spaces);
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Register A In/Out
@@ -293,11 +313,16 @@ void printBusGraphic(const CPU *cpu) {
   output = (control_word & EO) ? darrow_l : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
-  // Register B In
+  // Register B In/Out
   pos.X = BUS_X + 7;
   pos.Y = REGISTER_B_Y + 1;
-  // output = (control_word & BO) ? darrow_l : ((control_word & BI) ? darrow_r : spaces);
-  output = (control_word & BI) ? darrow_r : spaces;
+  output = (control_word & BO) ? darrow_l : ((control_word & BI) ? darrow_r : spaces);
+  WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
+
+  // Register TMP In
+  pos.X = BUS_X + 7;
+  pos.Y = REGISTER_TMP_Y + 1;
+  output = (control_word & TI) ? darrow_r : spaces;
   WriteConsoleOutputCharacterW(hConsole, output, 8, pos, &dwBytesWritten);
 
   // Output In

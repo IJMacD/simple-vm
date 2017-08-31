@@ -1,12 +1,12 @@
 #include "vm.h"
 #include "print.h"
 
-void printRegisterA(const CPU *cpu) {
-  printRegister8(REGISTER_A_X, REGISTER_A_Y + 1, cpu->register_A);
-}
-
 void printRegisterB(const CPU *cpu) {
   printRegister8(REGISTER_B_X, REGISTER_B_Y + 1, cpu->register_B);
+}
+
+void printRegisterTMP(const CPU *cpu) {
+  printRegister8(REGISTER_TMP_X, REGISTER_TMP_Y + 1, cpu->register_TMP);
 }
 
 void printALU(const CPU *cpu) {
@@ -24,4 +24,21 @@ void printBus(const CPU *cpu) {
 void printRam(const CPU *cpu, const ram_type RAM) {
   printRegister16(RAM_X + 9, RAM_Y + 1, cpu->memory_address);
   printRegister8(RAM_X + 9, RAM_Y + 2, RAM[cpu->memory_address & 0xFFFF]);
+}
+
+void updateDisplay(const CPU *cpu, const ram_type RAM) {
+  printRegisterA(cpu);
+  printRegisterB(cpu);
+  printRegisterTMP(cpu);
+  printALU(cpu);
+  printProgramCounter(cpu);
+  printBus(cpu);
+  printRam(cpu, RAM);
+  printOutput(cpu);
+  printInstruction(cpu);
+  // printDecoder(cpu);
+  printControl(cpu);
+  printClock(cpu);
+  printRamMap(cpu, RAM);
+  printBusGraphic(cpu);
 }
