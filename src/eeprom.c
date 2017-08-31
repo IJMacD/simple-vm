@@ -3,13 +3,13 @@
 #include "ben.h"
 
 const uint32_t u_instructions[256][16] = {
-  [NOP   ] = { MI|PO,  RO|II|CE,  0,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [INR_B ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [DCR_B ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [MVI_B ] = { MI|PO,  RO|II|CE,  PO|MI|CE,      RO|BI|DR,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [INR_C ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [DCR_C ] = { MI|PO,  RO|II|CE,  EF,      0,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
-  [MVI_C ] = { MI|PO,  RO|II|CE,  PO|MI|CE,      RO|CI|DR,      0,         0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [NOP   ] = { MI|PO,  RO|II|CE,  0,          0,          0,            0, 0, 0,     0, 0, 0, 0, 0, 0, 0, 0 },
+  [INR_B ] = { MI|PO,  RO|II|CE,  BO|AI,      V1|TI,      EF|EO|AI,     AO|BI|DR },
+  [DCR_B ] = { MI|PO,  RO|II|CE,  BO|AI,      V1|TI,      SU|EF|EO|AI,  AO|BI|DR },
+  [MVI_B ] = { MI|PO,  RO|II|CE,  PO|MI|CE,   RO|BI|DR },
+  [INR_C ] = { MI|PO,  RO|II|CE,  CO|AI,      V1|TI,      EF|EO|AI,     AO|CI|DR },
+  [DCR_C ] = { MI|PO,  RO|II|CE,  CO|AI,      V1|TI,      SU|EF|EO|AI,  AO|CI|DR },
+  [MVI_C ] = { MI|PO,  RO|II|CE,  PO|MI|CE,   RO|CI|DR },
 
   [RAL   ] = { MI|PO,  RO|II|CE, 0 },
   [RAR   ] = { MI|PO,  RO|II|CE, 0 },
@@ -18,8 +18,8 @@ const uint32_t u_instructions[256][16] = {
 
   [STA   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|MI|CE, AO|RI|DR },
   [LDA   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|MI|CE, RO|AI|DR },
-  [INR_A ] = { MI|PO,  RO|II|CE, EF },
-  [DCR_A ] = { MI|PO,  RO|II|CE, EF },
+  [INR_A ] = { MI|PO,  RO|II|CE, V1|TI,    EF|EO|AI|DR },
+  [DCR_A ] = { MI|PO,  RO|II|CE, V1|TI,    SU|EF|EO|AI|DR },
   [MVI_A ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|AI|DR },
 
   [MOV_BC] = { MI|PO,  RO|II|CE, CO|BI|DR },

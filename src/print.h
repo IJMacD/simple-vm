@@ -6,6 +6,8 @@
 #define REGISTER_TMP_Y  ALU_Y + 3
 #define REGISTER_B_X  REGISTER_A_X
 #define REGISTER_B_Y  REGISTER_TMP_Y + 3
+#define REGISTER_C_X  REGISTER_B_X
+#define REGISTER_C_Y  REGISTER_B_Y + 3
 #define CLOCK_X        2
 #define CLOCK_Y        1
 #define COUNTER_X     CLOCK_X
@@ -15,17 +17,19 @@
 #define RAM_X         COUNTER_X
 #define RAM_Y         COUNTER_Y + 3
 #define OUTPUT_X      REGISTER_A_X
-#define OUTPUT_Y      REGISTER_B_Y + 3
+#define OUTPUT_Y      REGISTER_C_Y + 3
 #define INSTRUCTION_X COUNTER_X
 #define INSTRUCTION_Y RAM_Y + 4
 #define DECODER_X     COUNTER_X
 #define DECODER_Y     INSTRUCTION_Y + 4
 #define CONTROL_X     COUNTER_X
-#define CONTROL_Y     DECODER_Y + 3
+#define CONTROL_Y     OUTPUT_Y + 2
 #define HELP_X         1
 #define HELP_Y        CONTROL_Y + 4
-#define RAM_MAP_X     REGISTER_A_X + 16
+#define RAM_MAP_X     REGISTER_A_X + 21
 #define RAM_MAP_Y      1
+
+#define RAM_MAP_SIZE   22
 
 #define PRINTF_BINARY_PATTERN_INT4 "%c%c%c%c"
 #define PRINTF_BYTE_TO_BINARY_INT4(i)    \

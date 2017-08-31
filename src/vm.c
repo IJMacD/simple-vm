@@ -40,6 +40,7 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (control_word & TO) cpu->bus = cpu->register_TMP;
   if (control_word & BO) cpu->bus = cpu->register_B;
   if (control_word & CO) cpu->bus = cpu->register_C;
+  if (control_word & V1) cpu->bus = 0x01;
 
   /*********
    * INPUTS - reading from bus
@@ -74,16 +75,16 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (control_word & CE)
     cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
 
+
+  // Cheat: This should not be inside execute
+  printDecoder(cpu);
+
   // JUMPS
   if (control_word & JZ && cpu->alu_flags & ALU_FLAG_Z)
     cpu->decoder_phase = (cpu->decoder_phase + 2) % PHASE_COUNT;
 
   if (control_word & JS && cpu->alu_flags & ALU_FLAG_S)
     cpu->decoder_phase = (cpu->decoder_phase + 2) % PHASE_COUNT;
-
-  // Cheat: This should not be inside execute
-  printDecoder(cpu);
-
   if (control_word & DR){
     cpu->decoder_phase = 0;
   }
@@ -113,9 +114,12 @@ void reset(CPU *cpu) {
   cpu->memory_address = 0;
   cpu->register_A = 0;
   cpu->register_B = 0;
+  cpu->register_C = 0;
   cpu->register_I = 0;
+  cpu->register_TMP = 0;
   cpu->port_3 = 0;
-  cpu->alu_output = cpu->register_A + cpu->register_B;
+  cpu->alu_output = 0;
+  cpu->alu_flags = 0;
   cpu->control_word = 0;
 }
 

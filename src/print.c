@@ -5,6 +5,10 @@ void printRegisterB(const CPU *cpu) {
   printRegister8(REGISTER_B_X, REGISTER_B_Y + 1, cpu->register_B);
 }
 
+void printRegisterC(const CPU *cpu) {
+  printRegister8(REGISTER_C_X, REGISTER_C_Y + 1, cpu->register_C);
+}
+
 void printRegisterTMP(const CPU *cpu) {
   printRegister8(REGISTER_TMP_X, REGISTER_TMP_Y + 1, cpu->register_TMP);
 }
@@ -29,6 +33,7 @@ void printRam(const CPU *cpu, const ram_type RAM) {
 void updateDisplay(const CPU *cpu, const ram_type RAM) {
   printRegisterA(cpu);
   printRegisterB(cpu);
+  printRegisterC(cpu);
   printRegisterTMP(cpu);
   printALU(cpu);
   printProgramCounter(cpu);

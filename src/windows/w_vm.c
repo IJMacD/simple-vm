@@ -8,6 +8,10 @@ void *hConsole;
 int main(int argc, char *argv[]) {
   // Create blank console
   hConsole =  CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+  COORD size = {.X = 80, .Y = 28 };
+  SetConsoleScreenBufferSize(hConsole, size);
+  SMALL_RECT rect = { .Top = 0, .Left = 0, .Bottom = size.Y, .Right = size.X };
+  SetConsoleWindowInfo(hConsole, 1, &rect);
   SetConsoleActiveScreenBuffer(hConsole);
   // SetConsoleOutputCP(437); // DOS
   // SetConsoleOutputCP(1252); // Windows-1252 ANSI Latin 1
