@@ -20,7 +20,7 @@ void updateDisplay(const CPU *cpu, const ram_type RAM) {
   printRam(cpu, RAM);
   printOutput(cpu);
   printInstruction(cpu);
-  printDecoder(cpu);
+  // printDecoder(cpu);
   printControl(cpu);
   printClock(cpu);
   printRamMap(cpu, RAM);
@@ -73,8 +73,17 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (control_word & JP) cpu->program_counter = cpu->bus & 0xFFFF;
 
   // Finally do we increment the program counter?
-  if (control_word & CE){
+  if (control_word & CE)
     cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
+
+  printDecoder(cpu);
+
+  // For real finally, shall we short circuit the rest of the decoder phases?
+  if (control_word & DR){
+    cpu->decoder_phase = 0;
+  }
+  else {
+    cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
   }
 }
 
@@ -86,8 +95,6 @@ void render(CPU *cpu, ram_type RAM) {
 
 void step(CPU *cpu, ram_type RAM) {
   if (step_hook != NULL) step_hook();
-
-  cpu->decoder_phase = (cpu->decoder_phase + 1) % PHASE_COUNT;
 
   decodeInstruction(cpu);
   executeInstruction(cpu, RAM);
