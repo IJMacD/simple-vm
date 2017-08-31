@@ -45,10 +45,10 @@ const uint32_t u_instructions[256][16] = {
   [ORA_B ] = { MI|PO,  RO|II|CE, EF },
   [ORA_C ] = { MI|PO,  RO|II|CE, EF },
 
-  [JNZ   ] = { MI|PO,  RO|II|CE, 0 },
+  [JNZ   ] = { MI|PO,  RO|II|CE, JZ, PO|MI|CE, RO|JP|DR, CE, CE|DR },
   [JMP   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|JP|DR },
   [RET   ] = { MI|PO,  RO|II|CE, 0 },
-  [JZ    ] = { MI|PO,  RO|II|CE, 0 },
+  [_JZ   ] = { MI|PO,  RO|II|CE, JZ, CE, CE|DR, PO|MI|CE, RO|JP|DR },
   [CALL  ] = { MI|PO,  RO|II|CE, 0 },
 
   [_OUT  ] = { MI|PO,  RO|II|CE, AO|O3|CE|DR },
@@ -58,7 +58,7 @@ const uint32_t u_instructions[256][16] = {
   [XRI   ] = { MI|PO,  RO|II|CE, EF },
 
   [ORI   ] = { MI|PO,  RO|II|CE, EF },
-  [JM    ] = { MI|PO,  RO|II|CE, 0 },
+  [_JM   ] = { MI|PO,  RO|II|CE, 0 },
 };
 
 const char *mne_labels[256] = {
@@ -107,7 +107,7 @@ const char *mne_labels[256] = {
   [JNZ   ] = "JNZ",
   [JMP   ] = "JMP",
   [RET   ] = "RET",
-  [JZ    ] = "JZ",
+  [_JZ   ] = "JZ",
   [CALL  ] = "CALL",
 
   [_OUT  ] = "OUT",
@@ -117,5 +117,5 @@ const char *mne_labels[256] = {
   [XRI   ] = "XRI",
 
   [ORI   ] = "ORI",
-  [JM    ] = "JM",
+  [_JM   ] = "JM",
 };

@@ -74,6 +74,13 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (control_word & CE)
     cpu->program_counter = (cpu->program_counter + 1) % RAM_SIZE;
 
+  // JUMPS
+  if (control_word & JZ && cpu->alu_flags & ALU_FLAG_Z)
+    cpu->decoder_phase = (cpu->decoder_phase + 2) % PHASE_COUNT;
+
+  if (control_word & JS && cpu->alu_flags & ALU_FLAG_S)
+    cpu->decoder_phase = (cpu->decoder_phase + 2) % PHASE_COUNT;
+
   // Cheat: This should not be inside execute
   printDecoder(cpu);
 

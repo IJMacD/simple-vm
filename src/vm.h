@@ -1,6 +1,6 @@
 #include "ben.h"
 
-#define PHASE_COUNT 5
+#define PHASE_COUNT 7
 #define CONTROL_LINES 16
 #define DEFAULT_SLEEP 1024
 

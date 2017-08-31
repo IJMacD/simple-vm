@@ -33,6 +33,8 @@
 #define O3  0b00000000000100000000000000000000  // Output 3 out
 #define O4  0b00000000000000000000000000100000  // Output 4 out
 #define EF  0b00000000000000000000000000010000  // ALU Flag Set
+#define JZ  0b00000000000000000000000000001000  // Jump if Zero
+#define JS  0b00000000000000000000000000000100  // Jump if Negative
 
 
 /*************
@@ -89,7 +91,7 @@
 #define JNZ     0xC2  // 1100 0010
 #define JMP     0xC3  // 1100 0011
 #define RET     0xC9  // 1100 1001
-#define JZ      0xCA  // 1100 1010
+#define _JZ     0xCA  // 1100 1010
 #define CALL    0xCD  // 1100 1101
 
 #define _OUT    0xD3  // 1101 0011    // OUT
@@ -99,7 +101,7 @@
 #define XRI     0xEE  // 1110 1110  XRX | OUT_I
 
 #define ORI     0xF6  // 1111 0110  ORX | OUT_I
-#define JM      0xFA  // 1111 1010
+#define _JM     0xFA  // 1111 1010
 
 /*****************************
  * Combinational Instructions

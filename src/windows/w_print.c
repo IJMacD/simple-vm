@@ -131,7 +131,7 @@ void printLabels() {
   WriteConsoleOutputCharacterA(hConsole, decoder_lbl, LENGTH(decoder_lbl) - 1, pos, &dwBytesWritten);
   pos.X = DECODER_X;
   pos.Y = DECODER_Y + 1;
-  const char phase_lbl[] = "0 1 2 3 4";
+  const char phase_lbl[] = "0 1 2 3 4 5 6";
   WriteConsoleOutputCharacterA(hConsole, phase_lbl, LENGTH(phase_lbl) - 1, pos, &dwBytesWritten);
 
   // Control
