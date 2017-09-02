@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
       else if(strlen(argv[argi]) == 1 && argv[argi][0] == '3') RAM = &prog3;
       else {
 
-        FILE *input = fopen(argv[argi], "r");
+        FILE *input = fopen(argv[argi], "rb");
 
         if(input == NULL) {
           fprintf(stderr, "Error: Couldn't open file \"%s\"\n", argv[argi]);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
         }
 
         RAM = &empty;
-        fgets(*RAM, RAM_SIZE, input);
+        fread(*RAM, 1, RAM_SIZE, input);
       }
     }
   }

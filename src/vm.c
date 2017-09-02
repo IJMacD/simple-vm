@@ -8,9 +8,42 @@ void (*step_hook)() = NULL;
 void (*halt_hook)() = NULL;
 
 void updateALU(CPU *cpu) {
-  cpu->alu_output = (cpu->control_word & SU) ?
-    (cpu->register_A - cpu->register_TMP) :
-    (cpu->register_A + cpu->register_TMP);
+  /* ALU has 4 control lines
+   * Perform appropriate action based on control line state
+   */
+
+  int alu_control = cpu->control_word & (E1|E2|E3|E4);
+
+  if(alu_control == EC_D) {  // Decrement
+    cpu->alu_output = cpu->register_A - 1;
+  }
+  else if(alu_control == EC_I) {  // Increment
+    cpu->alu_output = cpu->register_A + 1;
+  }
+  else if(alu_control == EC_C) {  // Compliment
+    cpu->alu_output = ~cpu->register_A;
+  }
+  else if(alu_control == EC_R) {  // Rotate Right
+    cpu->alu_output = cpu->register_A >> 1;
+  }
+  else if(alu_control == EC_L) {  // Rotate Left
+    cpu->alu_output = cpu->register_A << 1;
+  }
+  else if(alu_control == EC_O) {  // Or
+    cpu->alu_output = cpu->register_A | cpu->register_TMP;
+  }
+  else if(alu_control == EC_X) {  // Xor
+    cpu->alu_output = cpu->register_A ^ cpu->register_TMP;
+  }
+  else if(alu_control == EC_A) {  // And
+    cpu->alu_output = cpu->register_A & cpu->register_TMP;
+  }
+  else if(alu_control == EC_S) {  // Subtract
+    cpu->alu_output = cpu->register_A - cpu->register_TMP;
+  }
+  else {   // Add
+    cpu->alu_output = cpu->register_A + cpu->register_TMP;
+  }
 }
 
 void decodeInstruction(CPU *cpu) {
@@ -47,7 +80,6 @@ void executeInstruction(CPU *cpu, ram_type RAM) {
   if (control_word & TO) cpu->bus = cpu->register_TMP;
   if (control_word & BO) cpu->bus = cpu->register_B;
   if (control_word & CO) cpu->bus = cpu->register_C;
-  if (control_word & V1) cpu->bus = 0x01;
 
   /*********
    * INPUTS - reading from bus

@@ -8,14 +8,12 @@
 #define MI  0b01000000000000000000000000000000  // Memory address register in
 #define RI  0b00100000000000000000000000000000  // RAM data in
 #define RO  0b00010000000000000000000000000000  // RAM data out
-// #define IO  0b00001000000000000000000000000000  // Instruction register out
 #define II  0b00000100000000000000000000000000  // Instruction register in
 #define AI  0b00000010000000000000000000000000  // A register in
 #define AO  0b00000001000000000000000000000000  // A register out
 #define EO  0b00000000100000000000000000000000  // ALU out
-#define SU  0b00000000010000000000000000000000  // ALU subtract
+#define SU  0b00000000010000000000000000000000  // ALU subtract (ALU Control 1)
 #define BI  0b00000000001000000000000000000000  // B register in
-// #define OI  0b00000000000100000000000000000000  // Output register in
 #define CE  0b00000000000010000000000000000000  // Program counter enable
 #define PO  0b00000000000001000000000000000000  // Program counter out
 #define JP  0b00000000000000100000000000000000  // Jump (program counter in)
@@ -35,7 +33,23 @@
 #define EF  0b00000000000000000000000000010000  // ALU Flag Set
 #define JZ  0b00000000000000000000000000001000  // Jump if Zero
 #define JS  0b00000000000000000000000000000100  // Jump if Negative
-#define V1  0b00000000000000000000000000000010  // Literal value 1
+#define E2  0b00001000000000000000000000000000  // ALU Control 2
+#define E3  0b00000000000000000000000000000010  // ALU Control 3
+#define E4  0b00000000000000000000000000000001  // ALU Control 4
+
+/*************
+ * ALU Control
+ *************/
+#define E1    SU
+#define EC_S  E1    // Subtract
+#define EC_A  E2    // And
+#define EC_X  E3    // Xor
+#define EC_O  (E3|E2) // Or
+#define EC_L  E4    // Rotate Left
+#define EC_R  (E4|E2) // Rotate Right
+#define EC_C  (E4|E3) // Compliment
+#define EC_I  (E4|E3|E2)    // Increment
+#define EC_D  (E4|E3|E2|E1) // Decrement
 
 
 /*************
