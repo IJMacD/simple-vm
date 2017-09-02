@@ -147,8 +147,12 @@ void printLabels() {
   WriteConsoleOutputCharacterA(hConsole, control_lbl, LENGTH(control_lbl) - 1, pos, &dwBytesWritten);
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 1;
-  const char line_lbl[] = "HT MI RI RO IO II AI AO EO SU BI OI CE PO JP DR";
+  const char line_lbl[] = "HT MI RI RO E2 II AI AO EO SU BI O3 CE PO JP DR";
   WriteConsoleOutputCharacterA(hConsole, line_lbl, LENGTH(line_lbl) - 1, pos, &dwBytesWritten);
+  pos.X = CONTROL_X;
+  pos.Y = CONTROL_Y + 3;
+  const char line2_lbl[] = "I1 I2 LA LO LX TI TO BO CI CO O4 EF JZ JS E3 E4";
+  WriteConsoleOutputCharacterA(hConsole, line2_lbl, LENGTH(line2_lbl) - 1, pos, &dwBytesWritten);
 
   // Ram Map
   pos.X = RAM_MAP_X + 1;
@@ -228,9 +232,9 @@ void printControl(const CPU *cpu) {
   pos.X = CONTROL_X;
   pos.Y = CONTROL_Y + 2;
 
-  wchar_t output[CONTROL_LINES * 3];
+  wchar_t output[16 * 3]; // 16 Control lines per row * 3 characters per control line
   int i, offset = 0;
-  for(i = 0; i < CONTROL_LINES; i++) {
+  for(i = 0; i < 16; i++) {
     unsigned int bit = 1 << (31 - i);
     output[offset++] = cpu->control_word & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
     output[offset++] = cpu->control_word & bit ? 0x2550 : ' ';
@@ -238,7 +242,20 @@ void printControl(const CPU *cpu) {
   }
 
   DWORD dwBytesWritten;
-  WriteConsoleOutputCharacterW(hConsole, output, CONTROL_LINES * 3, pos, &dwBytesWritten);
+  WriteConsoleOutputCharacterW(hConsole, output, 16 * 3, pos, &dwBytesWritten);
+
+  pos.X = CONTROL_X;
+  pos.Y = CONTROL_Y + 4;
+
+  offset = 0;
+  for(; i < 32; i++) {
+    unsigned int bit = 1 << (31 - i);
+    output[offset++] = cpu->control_word & bit ? 0x2550 : ' '; // '─' U+2550 Box Drawing Horizontal Double Bar
+    output[offset++] = cpu->control_word & bit ? 0x2550 : ' ';
+    output[offset++] = ' ';
+  }
+
+  WriteConsoleOutputCharacterW(hConsole, output, 16 * 3, pos, &dwBytesWritten);
 }
 
 void printClock(const CPU *cpu) {

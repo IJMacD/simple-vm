@@ -1,7 +1,7 @@
 #include "ben.h"
 
 #define PHASE_COUNT 7
-#define CONTROL_LINES 16
+#define CONTROL_LINES 32
 #define DEFAULT_SLEEP 1024
 
 #define RAM_SIZE 65536
