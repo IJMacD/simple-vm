@@ -54,11 +54,11 @@ const uint32_t u_instructions[256][16] = {
   [_OUT  ] = { MI|PO,  RO|II|CE, AO|O3|CE|DR },
   [_IN   ] = { MI|PO,  RO|II|CE, 0 },
 
-  [ANI   ] = { MI|PO,  RO|II|CE, EF },
-  [XRI   ] = { MI|PO,  RO|II|CE, EF },
+  [ANI   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|TI, EC_A|EO|AI|EF|DR },
+  [XRI   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|TI, EC_X|EO|AI|EF|DR },
 
-  [ORI   ] = { MI|PO,  RO|II|CE, EF },
-  [_JM   ] = { MI|PO,  RO|II|CE, 0 },
+  [ORI   ] = { MI|PO,  RO|II|CE, PO|MI|CE, RO|TI, EC_O|EO|AI|EF|DR },
+  [_JM   ] = { MI|PO,  RO|II|CE, JS, CE, CE|DR, PO|MI|CE, RO|JP|DR },
 };
 
 const char *mne_labels[256] = {
